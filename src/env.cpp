@@ -1,61 +1,59 @@
 #include "env.hpp"
 
 Env::Env(int w, int h) : width(w), height(h) {
-    if (!glfwInit())
-        return ;
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    window = glfwCreateWindow(width, height, "Particle System", NULL, NULL);
-    if (!window)
-    {
-        std::cout << "Could not create window\n";
-        glfwTerminate();
-        return ;
-    }
-    glfwMakeContextCurrent(window);
-    if(!gladLoadGL()) {
-        std::cout << "Glad loading error " << std::endl;
-        exit(-1);
-    }
-    std::cout << "OpenGL " << glGetString(GL_VERSION) << std::endl;
-    std::cout << "GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+  if (!glfwInit()) return;
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  window = glfwCreateWindow(width, height, "Particle System", NULL, NULL);
+  if (!window) {
+    std::cout << "Could not create window\n";
+    glfwTerminate();
+    return;
+  }
+  glfwMakeContextCurrent(window);
+  if (!gladLoadGL()) {
+    std::cout << "Glad loading error " << std::endl;
+    exit(-1);
+  }
+  std::cout << "OpenGL " << glGetString(GL_VERSION) << std::endl;
+  std::cout << "GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
-    inputHandler.screenWidth = width;
-    inputHandler.screenHeight = height;
+  inputHandler.screenWidth = width;
+  inputHandler.screenHeight = height;
 
-    glfwSetWindowUserPointer(window, &inputHandler);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetCursorPos(window, (width / 2.0), (height / 2.0));
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-    glfwSetCursorPosCallback(window, mouseCallback);
-    glfwSetKeyCallback(window, keyCallback);
-    glfwSwapInterval(0);
-    return ;
+  glfwSetWindowUserPointer(window, &inputHandler);
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+  glfwSetCursorPos(window, (width / 2.0), (height / 2.0));
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+  glfwSetCursorPosCallback(window, mouseCallback);
+  glfwSetKeyCallback(window, keyCallback);
+  glfwSwapInterval(0);
+  return;
 }
 
 void Env::updateFpsCounter() {
-    static double previous_seconds = glfwGetTime ();
-    static int frame_count;
-    double current_seconds = glfwGetTime ();
-    double elapsed_seconds = current_seconds - previous_seconds;
-    if (elapsed_seconds > 0.25) {
-        previous_seconds = current_seconds;
-        double fps = (double)frame_count / elapsed_seconds;
-        std::ostringstream tmp;
-        tmp << fps << " fps";
-        glfwSetWindowTitle (window, tmp.str().c_str());
-        frame_count = 0;
-    }
-    frame_count++;
+  static double previous_seconds = glfwGetTime();
+  static int frame_count;
+  double current_seconds = glfwGetTime();
+  double elapsed_seconds = current_seconds - previous_seconds;
+  if (elapsed_seconds > 0.25) {
+    previous_seconds = current_seconds;
+    double fps = (double)frame_count / elapsed_seconds;
+    std::ostringstream tmp;
+    tmp << fps << " fps";
+    glfwSetWindowTitle(window, tmp.str().c_str());
+    frame_count = 0;
+  }
+  frame_count++;
 }
 
-float	Env::getDeltaTime() {
-    static double previousTime = glfwGetTime();
-    static int frame_count;
-    double currentTime = glfwGetTime();
-    double deltaTime = currentTime - previousTime;
-    previousTime = currentTime;
-    return ((float)deltaTime);
+float Env::getDeltaTime() {
+  static double previousTime = glfwGetTime();
+  static int frame_count;
+  double currentTime = glfwGetTime();
+  double deltaTime = currentTime - previousTime;
+  previousTime = currentTime;
+  return ((float)deltaTime);
 }
