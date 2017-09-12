@@ -13,10 +13,7 @@ Env::Env(int w, int h) : width(w), height(h) {
     return;
   }
   glfwMakeContextCurrent(window);
-  if (!gladLoadGL()) {
-    std::cout << "Glad loading error " << std::endl;
-    exit(-1);
-  }
+  gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
   std::cout << "OpenGL " << glGetString(GL_VERSION) << std::endl;
   std::cout << "GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
