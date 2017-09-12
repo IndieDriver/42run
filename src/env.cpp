@@ -80,7 +80,7 @@ void mouseCallback(GLFWwindow *window, double xpos, double ypos) {
       reinterpret_cast<InputHandler *>(glfwGetWindowUserPointer(window));
   inputHandler->mousex = static_cast<float>(xpos);
   inputHandler->mousey = static_cast<float>(ypos);
-  // if (!inputHandler->mouseDisabled)
-  glfwSetCursorPos(window, (inputHandler->screenWidth / 2.0),
-                   (inputHandler->screenHeight / 2.0));
+  if (!inputHandler->mouseDisabled)
+    glfwSetCursorPos(window, (inputHandler->screenWidth / 2.0),
+                     (inputHandler->screenHeight / 2.0));
 }

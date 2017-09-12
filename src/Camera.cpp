@@ -11,11 +11,8 @@ Camera::Camera(glm::vec3 position, glm::vec3 targetPosition, int w, int h) {
   mouseYpos = static_cast<float>(height) / 2.0f;
 
   glm::vec3 direction = glm::normalize(targetPosition - position);
-  /*
   verAngle = asinf(direction.y);
-  horAngle = atan2(direction.x, direction.z); */
-  verAngle = 0.0f;
-  horAngle = 180.0f * (M_PI / 180.0f);
+  horAngle = atan2(direction.x, direction.z);
   proj = glm::perspective(
       45.0f, static_cast<float>(width) / static_cast<float>(height), 1.0f,
       1000.0f);
@@ -72,9 +69,10 @@ void Camera::queryInput(std::array<bool, 1024> keys, float mouse_x,
     pos = pos + tmp;
   }
   /* if (inputHandler->mouseDisabled) return; */
+  /*
   if (mouse_x != mouseXpos || mouse_y != mouseYpos) {
     mouseXpos = mouse_x;
     mouseYpos = mouse_y;
     mouseMoved = true;
-  }
+  } */
 }

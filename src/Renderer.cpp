@@ -13,17 +13,14 @@ Renderer &Renderer::operator=(Renderer const &rhs) {
 }
 
 void Renderer::draw(const RenderAttrib &renderAttrib) {
-  // print_matrix(this->proj);
-  // print_matrix(this->view);
   glUseProgram(renderAttrib.shader);
-  glm::mat4 model;
+  glm::mat4 model = glm::mat4(1.0f);
   for (int i = 0; i < renderAttrib.vaos.size(); i++) {
     if (i < renderAttrib.transforms.size()) {
       model = renderAttrib.transforms[i];
     }
     VAO vao = renderAttrib.vaos[i];
     glm::mat4 mvp = this->proj * this->view * model;
-    // print_matrix(mvp);
     glUniformMatrix4fv(glGetUniformLocation(renderAttrib.shader, "MVP"), 1,
                        GL_FALSE, static_cast<GLfloat *>(&mvp[0][0]));
     glBindVertexArray(vao.indice);
