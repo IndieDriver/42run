@@ -32,6 +32,7 @@ Model::~Model(void) {}
 
 Model& Model::operator=(Model const& rhs) {
   if (this != &rhs) {
+    this->_renderAttrib = rhs._renderAttrib;
   }
   return (*this);
 }

@@ -1,5 +1,6 @@
 #include "Camera.hpp"
 #include "Model.hpp"
+#include "Scene.hpp"
 #include "Shader.hpp"
 #include "env.hpp"
 #include "run.hpp"
@@ -25,27 +26,20 @@ int main() {
   Camera camera(glm::vec3(0.0f, 0.0f, -10.0f), glm::vec3(0.0f, 0.0f, 0.0f),
                 env.width, env.height);
   Renderer renderer;
-  Model cube(shader.id, cube_vertices);
-  /*
-     Scene scene(&camera);
-
-     bool anim = false;
-     scene.initScene(); */
+  Scene scene(&renderer);
+  scene.models.push_back(Model(shader.id, cube_vertices));
   while (!glfwWindowShouldClose(env.window)) {
     env.updateFpsCounter();
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    /*
-    scene.queryInput(env);
-    scene.draw(shader, env.particle_num);
-    env.updateFpsCounter(); */
+    // TODO: scene.queryInput(env);
     glfwPollEvents();
     camera.queryInput(env.inputHandler.keys, env.inputHandler.mousex,
                       env.inputHandler.mousey);
     camera.update();
     renderer.view = camera.view;
     renderer.proj = camera.proj;
-    renderer.draw(cube.getRenderAttrib());
+    scene.draw();
     glfwSwapBuffers(env.window);
     GL_DUMP_ERROR("draw loop");
     if (glfwGetKey(env.window, GLFW_KEY_ESCAPE)) {
