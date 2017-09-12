@@ -2,6 +2,7 @@
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
+#include <array>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "env.hpp"
@@ -20,7 +21,7 @@ class Camera {
   float mouseYpos;
 
   Camera(glm::vec3 pos, glm::vec3 target, int width = 0, int height = 0);
-  void queryInput();
+  void queryInput(std::array<bool, 1024> keys, float mouse_x, float mouse_y);
   void update();
 
  private:

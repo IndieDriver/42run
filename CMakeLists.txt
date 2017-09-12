@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(42run)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 find_package(OpenGL REQUIRED)
 
 #Handle GLFW
@@ -23,7 +23,9 @@ set(SOURCE_FILES
         src/env.cpp
         src/Shader.cpp
         src/Camera.cpp
-        src/InputHandler.cpp
+        src/Model.cpp
+        src/Scene.cpp
+        src/Renderer.cpp
         third-party/glad/src/glad.c
         )
 
