@@ -24,30 +24,16 @@ int main() {
   Env env(1280, 720);
   Shader shader("shaders/run.vert", "shaders/run.frag");
 
-  Camera camera(glm::vec3(0.0f, 0.25f, -1.0f), glm::vec3(0.0f, 0.25f, 0.0f),
+  Camera camera(glm::vec3(0.0f, 0.1f, -1.0f), glm::vec3(0.0f, 0.1f, 0.0f),
                 env.width, env.height);
-  Renderer renderer;
   VAO vao_cube(cube_vertices);
-  Scene scene(shader, &renderer);
   Model cubeModel = Model(shader.id, &vao_cube, glm::vec3(1.0f, 0.0f, 0.0),
                           glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f),
                           glm::vec3(1.0f, 1.0f, 1.0f));
+  Renderer renderer;
+  Scene scene(shader, &renderer);
   scene.cubeModel = &cubeModel;
-  /*
-  scene.models.push_back(Model(shader.id, &vao_cube,
-                               glm::vec3(1.0f, 1.0f, 1.0f),
-                               glm::vec3(0.0f, -0.5f, 0.0f), glm::vec3(0.0f),
-                               glm::vec3(5.0f, 0.0f, 5.0f))); */
-  /*
-  scene.models.push_back(Model(shader.id, &vao_cube, glm::vec3(1.0f, 0.0f, 0.0),
-                               glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f),
-                               glm::vec3(1.0f, 1.0f, 1.0f))); */
-  /*
-  scene.models.push_back(Model(shader.id, &vao_cube,
-                               glm::vec3(1.0f, 0.0f, 0.0f),
-                               glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec3(0.0f),
-                               glm::vec3(1.0f, 1.0f, 1.0f))); */
-  scene.loadFloor(glm::vec3(4.0f, 0.0f, 4.0f));
+  scene.init();
   while (!glfwWindowShouldClose(env.window)) {
     env.updateFpsCounter();
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
