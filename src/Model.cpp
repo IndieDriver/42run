@@ -33,6 +33,15 @@ void Model::setTransform(glm::vec3 position, glm::vec3 rotation,
   updateTransform();
 }
 
+void Model::setTransform(glm::mat4 transform) {
+  this->_renderAttrib.transforms[0] = transform;
+}
+
+glm::mat4 Model::getTransform() {
+  updateTransform();
+  return (this->_renderAttrib.transforms[0]);
+}
+
 void Model::updateTransform() {
   glm::mat4 mat_translation = glm::translate(_position);
   glm::mat4 mat_rotation =

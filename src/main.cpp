@@ -40,11 +40,13 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // TODO: scene.queryInput(env);
     glfwPollEvents();
+    /*
     camera.queryInput(env.inputHandler.keys, env.inputHandler.mousex,
-                      env.inputHandler.mousey);
+                      env.inputHandler.mousey); */
     camera.update();
     renderer.view = camera.view;
     renderer.proj = camera.proj;
+    scene.update(env.inputHandler.keys);
     scene.draw();
     glfwSwapBuffers(env.window);
     // GL_DUMP_ERROR("draw loop");
