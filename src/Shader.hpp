@@ -5,11 +5,16 @@
 
 class Shader {
  public:
-  GLuint id = 0;
   Shader(std::string vertexFilename, std::string fragFilename);
+  Shader(Shader const &src);
+  virtual ~Shader(void);
+  Shader &operator=(Shader const &rhs);
+
+  GLuint id = 0;
   void use() const;
 
  private:
+  Shader(void);
   GLuint compileShader(std::string filename, GLuint shaderType);
   GLuint linkShaders(GLuint vertexID, GLuint fragID);
 };

@@ -1,18 +1,30 @@
 #pragma once
+#include <array>
 #include "Renderer.hpp"
 #include "env.hpp"
 #include "run.hpp"
 
 class Model {
  public:
-  Model(GLuint shader, VAO& vao);
+  Model(GLuint shader, VAO* vao, glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f),
+        glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3 rot = glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f));
   Model(Model const& src);
   virtual ~Model(void);
   Model& operator=(Model const& rhs);
   const RenderAttrib getRenderAttrib() const;
   void add(glm::mat4 transform);
+  void setTransform(glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f),
+                    glm::vec3 rot = glm::vec3(0.0f, 0.0f, 0.0f),
+                    glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f));
+  void updateTransform();
+  void setColor(glm::vec3 color);  // TODO: temporary, to remove
 
  private:
   Model(void);
   RenderAttrib _renderAttrib;
+  glm::vec3 _position;
+  glm::vec3 _rotation;
+  glm::vec3 _scale;
 };

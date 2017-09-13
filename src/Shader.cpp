@@ -1,5 +1,17 @@
 #include "Shader.hpp"
 
+Shader::Shader(void) {}
+
+Shader::Shader(Shader const &src) { *this = src; }
+
+Shader::~Shader(void) {}
+
+Shader &Shader::operator=(Shader const &rhs) {
+  if (this != &rhs) {
+    this->id = rhs.id;
+  }
+  return (*this);
+}
 Shader::Shader(std::string vertexFilename, std::string fragmentFilename) {
   GLuint vertexID;
   GLuint fragID;

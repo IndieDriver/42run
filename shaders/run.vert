@@ -3,7 +3,8 @@ layout(location = 0) in vec3 vertex_pos;
 
 out vec3 frag_color;
 uniform mat4 MVP;
+uniform vec3 color;
 void main() {
-	frag_color = vec3(1.0f, 0.0f, 0.0f);
+	frag_color = color;
 	gl_Position = MVP * vec4(vertex_pos, 1.0f);
 }

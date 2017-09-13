@@ -28,6 +28,7 @@ struct RenderAttrib {
   VAO* vao;
   GLuint shader;
   std::vector<glm::mat4> transforms;
+  glm::vec3 color;  // TODO: replace by texture
 };
 
 class Renderer {
