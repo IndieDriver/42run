@@ -58,17 +58,16 @@ Scene& Scene::operator=(Scene const& rhs) {
 
 void Scene::update(std::array<bool, 1024> keys) {
   float offset = 0.0f;
-  /*
   if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT]) {
-    offset -= 0.00001f;
+    offset -= 0.001f;
   }
   if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT]) {
-    offset += 0.00001f;
-  } */
-  /*
+    offset += 0.001f;
+  }
   for (auto flr : this->floors) {
-    flr->move(glm::vec3(offset, 0.0f, -0.00001f));
-  } */
+    // flr->updateTransform();
+    flr->move(glm::vec3(offset, 0.0f, -0.01f));
+  }
 }
 
 void Scene::draw() {
@@ -133,7 +132,6 @@ void Floor::updateTransform() {
       glm::eulerAngleYXZ(_rotation.y, _rotation.x, _rotation.z);
   glm::mat4 mat_scale = glm::scale(_scale);
   this->transform = mat_translation * mat_rotation * mat_scale;
-  // print_matrix(this->transform);
   for (auto& model : models) {
     model.setTransform(this->transform * model.getTransform());
   }

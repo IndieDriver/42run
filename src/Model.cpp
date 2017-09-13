@@ -21,6 +21,9 @@ Model::~Model(void) {
 Model& Model::operator=(Model const& rhs) {
   if (this != &rhs) {
     this->_renderAttrib = rhs._renderAttrib;
+    this->_position = rhs._position;
+    this->_rotation = rhs._rotation;
+    this->_scale = rhs._scale;
   }
   return (*this);
 }
