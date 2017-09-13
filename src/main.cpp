@@ -1,5 +1,6 @@
 #include "Camera.hpp"
 #include "Model.hpp"
+#include "Renderer.hpp"
 #include "Scene.hpp"
 #include "Shader.hpp"
 #include "env.hpp"
@@ -26,8 +27,9 @@ int main() {
   Camera camera(glm::vec3(0.0f, 0.0f, -10.0f), glm::vec3(0.0f, 0.0f, 0.0f),
                 env.width, env.height);
   Renderer renderer;
+  VAO vao_cube(cube_vertices);
   Scene scene(&renderer);
-  scene.models.push_back(Model(shader.id, cube_vertices));
+  scene.models.push_back(Model(shader.id, vao_cube));
   while (!glfwWindowShouldClose(env.window)) {
     env.updateFpsCounter();
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
