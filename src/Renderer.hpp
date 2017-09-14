@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include "env.hpp"
 #include "run.hpp"
 
@@ -29,6 +30,15 @@ struct RenderAttrib {
   GLuint shader;
   std::vector<glm::mat4> transforms;
   glm::vec3 color;  // TODO: replace by texture
+  bool operator<(const struct RenderAttrib& rhs) const {
+    if (this->shader == rhs.shader) {
+      return (this->vao->indice < rhs.vao->indice);
+    } else if (this->shader < rhs.shader) {
+      return this->shader < rhs.shader;
+    } else {
+      return this->shader > rhs.shader;
+    }
+  }
 };
 
 class Renderer {
@@ -37,7 +47,13 @@ class Renderer {
   Renderer(Renderer const& src);
   virtual ~Renderer(void);
   Renderer& operator=(Renderer const& rhs);
-  void draw(const RenderAttrib& renderAttrib);
+  void addRenderAttrib(const RenderAttrib& renderAttrib);
+  void draw();
+  void flush();
   glm::mat4 view;
   glm::mat4 proj;
+  void printRenderAttribs();
+
+ private:
+  std::vector<RenderAttrib> renderAttribs;
 };

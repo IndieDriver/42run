@@ -48,7 +48,7 @@ int main() {
     scene.update(env.inputHandler.keys);
     scene.draw();
     glfwSwapBuffers(env.window);
-    // GL_DUMP_ERROR("draw loop");
+    GL_DUMP_ERROR("draw loop");
     if (glfwGetKey(env.window, GLFW_KEY_ESCAPE)) {
       glfwSetWindowShouldClose(env.window, 1);
     }

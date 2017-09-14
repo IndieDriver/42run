@@ -12,15 +12,36 @@ Renderer &Renderer::operator=(Renderer const &rhs) {
   return (*this);
 }
 
-void Renderer::draw(const RenderAttrib &renderAttrib) {
-  glUseProgram(renderAttrib.shader);
-  for (int i = 0; i < renderAttrib.transforms.size(); i++) {
-    glm::mat4 mvp = this->proj * this->view * renderAttrib.transforms[i];
-    glUniform3fv(glGetUniformLocation(renderAttrib.shader, "color"), 1,
-                 glm::value_ptr(renderAttrib.color));
-    glUniformMatrix4fv(glGetUniformLocation(renderAttrib.shader, "MVP"), 1,
-                       GL_FALSE, static_cast<GLfloat *>(glm::value_ptr(mvp)));
-    glBindVertexArray(renderAttrib.vao->indice);
-    glDrawArrays(GL_TRIANGLES, 0, renderAttrib.vao->size);
+void Renderer::addRenderAttrib(const RenderAttrib &renderAttrib) {
+  renderAttribs.push_back(renderAttrib);
+}
+
+void Renderer::draw() {
+  std::sort(renderAttribs.begin(), renderAttribs.end());
+  int shader_id = -1;
+  for (const auto &attrib : this->renderAttribs) {
+    if (attrib.shader != shader_id) {
+      glUseProgram(attrib.shader);
+      shader_id = attrib.shader;
+    }
+    if (shader_id != -1) {
+      glm::mat4 mvp = this->proj * this->view * attrib.transforms[0];
+      glUniform3fv(glGetUniformLocation(shader_id, "color"), 1,
+                   glm::value_ptr(attrib.color));
+      glUniformMatrix4fv(glGetUniformLocation(attrib.shader, "MVP"), 1,
+                         GL_FALSE, static_cast<GLfloat *>(glm::value_ptr(mvp)));
+      glBindVertexArray(attrib.vao->indice);
+      glDrawArrays(GL_TRIANGLES, 0, attrib.vao->size);
+    }
   }
+}
+
+void Renderer::flush() { renderAttribs.clear(); }
+
+void Renderer::printRenderAttribs() {
+  std::cout << "------------" << std::endl;
+  for (const auto &attrib : this->renderAttribs) {
+    std::cout << attrib.shader << " | " << attrib.vao->indice << std::endl;
+  }
+  std::cout << "------------" << std::endl;
 }

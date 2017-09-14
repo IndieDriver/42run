@@ -93,9 +93,12 @@ void Scene::update(std::array<bool, 1024> keys) {
 void Scene::draw() {
   for (const auto& flr : floors) {
     for (const auto& model : flr->models) {
-      this->_renderer->draw(model.getRenderAttrib());
+      this->_renderer->addRenderAttrib(model.getRenderAttrib());
+      // this->_renderer->draw(model.getRenderAttrib());
     }
   }
+  this->_renderer->draw();
+  this->_renderer->flush();
 }
 
 void Scene::populateFloor(Floor* floor_ptr) {
