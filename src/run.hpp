@@ -9,6 +9,7 @@
 
 struct Vertex {
   glm::vec3 position;
+  glm::vec2 uv;
 };
 
 static void GL_DUMP_ERROR(std::string message) {

@@ -4,25 +4,12 @@
 #include "run.hpp"
 
 struct VAO {
-  GLuint indice;
-  GLsizei size;
-  VAO(std::vector<Vertex> vertices) {
-    GLuint vbo;
-    this->size = vertices.size();
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, this->size * sizeof(Vertex), vertices.data(),
-                 GL_STATIC_DRAW);
-
-    glGenVertexArrays(1, &this->indice);
-    glBindVertexArray(this->indice);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (GLvoid*)offsetof(Vertex, position));
-
-    glEnableVertexAttribArray(0);
-  }
+  GLuint vao;
+  GLuint ebo;
+  GLsizei vertices_size;
+  GLsizei indices_size;
+  VAO(std::vector<Vertex> vertices);
+  VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices);
 };
 
 struct RenderAttrib {
@@ -32,7 +19,7 @@ struct RenderAttrib {
   glm::vec3 color;  // TODO: replace by texture
   bool operator<(const struct RenderAttrib& rhs) const {
     if (this->shader == rhs.shader) {
-      return (this->vao->indice < rhs.vao->indice);
+      return (this->vao->vao < rhs.vao->vao);
     } else if (this->shader < rhs.shader) {
       return this->shader < rhs.shader;
     } else {

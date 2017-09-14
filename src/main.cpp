@@ -7,6 +7,20 @@
 #include "run.hpp"
 
 std::vector<Vertex> cube_vertices = {
+    {{-0.5f, -0.5f, 0.5f}, {0.0, 0.0}},   {{0.5f, -0.5f, 0.5f}, {1.0f, 0.0}},
+    {{0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}},   {{-0.5f, 0.5f, 0.5f}, {0.0, 1.0f}},
+    {{-0.5f, 0.5f, 0.5f}, {0.0, 0.0}},    {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0}},
+    {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},  {{-0.5f, 0.5f, -0.5f}, {0.0, 1.0f}},
+    {{0.5f, -0.5f, -0.5f}, {0.0, 0.0}},   {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0}},
+    {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}}, {{0.5f, 0.5f, -0.5f}, {0.0, 1.0f}},
+    {{-0.5f, -0.5f, -0.5f}, {0.0, 0.0}},  {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0}},
+    {{0.5f, -0.5f, 0.5f}, {1.0f, 1.0f}},  {{-0.5f, -0.5f, 0.5f}, {0.0, 1.0f}},
+    {{-0.5f, -0.5f, -0.5f}, {0.0, 0.0}},  {{-0.5f, -0.5f, 0.5f}, {0.5f, 0.0}},
+    {{-0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}},  {{-0.5f, 0.5f, -0.5f}, {0.0, 0.5f}},
+    {{0.5f, -0.5f, 0.5f}, {0.0, 0.0}},    {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0}},
+    {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},  {{0.5f, 0.5f, 0.5f}, {0.0, 1.0f}}};
+/*
+std::vector<Vertex> cube_vertices = {
     {{0.5f, 0.5f, 0.5f}},    {{0.5f, -0.5f, 0.5f}},  {{0.5f, 0.5f, -0.5f}},
     {{0.5f, 0.5f, -0.5f}},   {{0.5f, -0.5f, 0.5f}},  {{0.5f, -0.5f, -0.5f}},
     {{0.5f, 0.5f, 0.5f}},    {{-0.5f, 0.5f, 0.5f}},  {{0.5f, -0.5f, 0.5f}},
@@ -18,7 +32,12 @@ std::vector<Vertex> cube_vertices = {
     {{-0.5f, -0.5f, -0.5f}}, {{-0.5f, 0.5f, -0.5f}}, {{0.5f, 0.5f, -0.5f}},
     {{-0.5f, -0.5f, -0.5f}}, {{0.5f, 0.5f, -0.5f}},  {{0.5f, -0.5f, -0.5f}},
     {{-0.5f, -0.5f, -0.5f}}, {{0.5f, -0.5f, 0.5f}},  {{-0.5f, -0.5f, 0.5f}},
-    {{-0.5f, -0.5f, -0.5f}}, {{0.5f, -0.5f, -0.5f}}, {{0.5f, -0.5f, 0.5f}}};
+    {{-0.5f, -0.5f, -0.5f}}, {{0.5f, -0.5f, -0.5f}}, {{0.5f, -0.5f, 0.5f}}}; */
+
+std::vector<GLuint> cube_elements = {
+    0,  1,  2,  2,  3,  0,  4,  5,  6,  6,  7,  4,  8,  9,  10, 10, 11, 8,
+    12, 13, 14, 14, 15, 12, 16, 17, 18, 18, 19, 16, 20, 21, 22, 22, 23, 20,
+};
 
 int main() {
   Env env(1280, 720);
@@ -26,7 +45,7 @@ int main() {
 
   Camera camera(glm::vec3(0.0f, 0.3f, -1.0f), glm::vec3(0.0f, 0.3f, 0.0f),
                 env.width, env.height);
-  VAO vao_cube(cube_vertices);
+  VAO vao_cube(cube_vertices, cube_elements);
   Model cubeModel = Model(shader.id, &vao_cube, glm::vec3(1.0f, 0.0f, 0.0),
                           glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f),
                           glm::vec3(1.0f, 1.0f, 1.0f));
@@ -40,8 +59,8 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glfwPollEvents();
     /*
-    camera.queryInput(env.inputHandler.keys, env.inputHandler.mousex,
-                      env.inputHandler.mousey); */
+       camera.queryInput(env.inputHandler.keys, env.inputHandler.mousex,
+       env.inputHandler.mousey); */
     camera.update();
     renderer.view = camera.view;
     renderer.proj = camera.proj;
