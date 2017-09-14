@@ -1,5 +1,6 @@
 #pragma once
 #include <deque>
+#include <limits>
 #include "Model.hpp"
 #include "Renderer.hpp"
 #include "Shader.hpp"
@@ -26,7 +27,12 @@ class Floor {
 };
 
 struct Player {
-  glm::vec3 pos = glm::vec3(0.0f);
+  float speed = {5.0f};
+  glm::vec3 position = {0.0f, 0.0f, 0.0f};
+  glm::vec3 velocity = {0.0f, 0.0f, 0.0f};
+
+  void update(std::array<bool, 1024> keys, float deltaTime);
+  glm::vec3 offsetSinceLastFrame = {0.0f, 0.0f, 0.0f};
 };
 
 class Scene {
@@ -39,12 +45,12 @@ class Scene {
   std::deque<Floor*> floors;
   Model* cubeModel;
   void init();
-  void update(std::array<bool, 1024> keys);
+  void update(std::array<bool, 1024> keys, float deltaTime);
   void draw();
   void populateFloor(Floor* floor_ptr);
 
  private:
   Scene(void);
   Renderer* _renderer;
-  Player player;
+  Player _player;
 };

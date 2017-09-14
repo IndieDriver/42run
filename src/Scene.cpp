@@ -38,10 +38,10 @@ void Scene::init() {
   populateFloor(floor3);
   populateFloor(floor4);
 
-  floor1->setTransform(glm::vec3(-4.0f, 0.0f, 0.0f));
-  floor2->setTransform(glm::vec3(-4.0f, 0.0f, 9.0f));
-  floor3->setTransform(glm::vec3(-4.0f, 0.0f, 18.0f));
-  floor4->setTransform(glm::vec3(-4.0f, 0.0f, 27.0f));
+  floor1->setTransform(glm::vec3(-4.0f, 0.5f, 0.0f));
+  floor2->setTransform(glm::vec3(-4.0f, 0.5f, 9.0f));
+  floor3->setTransform(glm::vec3(-4.0f, 0.5f, 18.0f));
+  floor4->setTransform(glm::vec3(-4.0f, 0.5f, 27.0f));
 
   floors.push_back(floor1);
   floors.push_back(floor2);
@@ -63,14 +63,32 @@ Scene& Scene::operator=(Scene const& rhs) {
   return (*this);
 }
 
-void Scene::update(std::array<bool, 1024> keys) {
-  float offset = 0.0f;
+void Player::update(std::array<bool, 1024> keys, float deltaTime) {
+  glm::vec3 backupPosition = this->position;
   if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT]) {
-    offset -= 0.01f;
+    this->position.x += 1.0f * deltaTime;
   }
   if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT]) {
-    offset += 0.01f;
+    this->position.x -= 1.0f * deltaTime;
   }
+  if (keys[GLFW_KEY_SPACE]) {
+    if (this->position.y == 0.0f) {
+      this->velocity.y = 0.7f;
+    }
+  }
+  this->speed += 0.1f * deltaTime;
+  this->position.z += log(speed) * 2.0f * deltaTime;
+  this->velocity.y -= 0.81f * deltaTime;
+  this->position += velocity * deltaTime;
+
+  this->position.y = glm::clamp(this->position.y, 0.0f, 1.0f);
+  this->velocity.y = glm::clamp(this->velocity.y, -10.0f, 3.0f);
+  this->offsetSinceLastFrame = backupPosition - this->position;
+}
+
+void Scene::update(std::array<bool, 1024> keys, float deltaTime) {
+  this->_player.update(keys, deltaTime);
+
   if (this->floors[0]->getPosition().z < -9.0f) {
     // front floor is behind us, delete it and stack a new one
     delete this->floors[0];
@@ -84,9 +102,10 @@ void Scene::update(std::array<bool, 1024> keys) {
     this->floors.push_back(newFloor);
   }
   glm::vec3 pos = this->floors[0]->getPosition();
-  // std::cout << pos.x << "|" << pos.y << "|" << pos.z << std::endl;
+  //_player.speed += 0.1f;
   for (auto flr : this->floors) {
-    flr->move(glm::vec3(offset, 0.0f, -0.01f));
+    flr->move(_player.offsetSinceLastFrame);
+    // flr->move(glm::vec3(offset, 0.0f, -log(_player.speed) * deltaTime));
   }
 }
 
@@ -94,7 +113,6 @@ void Scene::draw() {
   for (const auto& flr : floors) {
     for (const auto& model : flr->models) {
       this->_renderer->addRenderAttrib(model.getRenderAttrib());
-      // this->_renderer->draw(model.getRenderAttrib());
     }
   }
   this->_renderer->draw();

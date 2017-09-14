@@ -24,7 +24,7 @@ int main() {
   Env env(1280, 720);
   Shader shader("shaders/run.vert", "shaders/run.frag");
 
-  Camera camera(glm::vec3(0.0f, 0.1f, -1.0f), glm::vec3(0.0f, 0.1f, 0.0f),
+  Camera camera(glm::vec3(0.0f, 0.3f, -1.0f), glm::vec3(0.0f, 0.3f, 0.0f),
                 env.width, env.height);
   VAO vao_cube(cube_vertices);
   Model cubeModel = Model(shader.id, &vao_cube, glm::vec3(1.0f, 0.0f, 0.0),
@@ -45,7 +45,7 @@ int main() {
     camera.update();
     renderer.view = camera.view;
     renderer.proj = camera.proj;
-    scene.update(env.inputHandler.keys);
+    scene.update(env.inputHandler.keys, env.getDeltaTime());
     scene.draw();
     glfwSwapBuffers(env.window);
     GL_DUMP_ERROR("draw loop");
