@@ -79,7 +79,7 @@ VAO::VAO(std::vector<Vertex> vertices) {
 VAO::VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices) {
   GLuint vbo;
   this->vertices_size = vertices.size();
-  this->indices_size = vertices.size();
+  this->indices_size = indices.size();
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
   glBufferData(GL_ARRAY_BUFFER, this->vertices_size * sizeof(Vertex),
