@@ -30,16 +30,23 @@ Scene::Scene(Shader shader, Renderer* renderer) : _renderer(renderer) {}
 
 void Scene::init() {
   Floor* floor1 = new Floor(setup_floor1);
-  floor1->setTransform(glm::vec3(4.0f, 0.0f, 9.0f));
   Floor* floor2 = new Floor(setup_floor2);
-  floor2->setTransform(glm::vec3(4.0f, 0.0f, 18.0f));
+  Floor* floor3 = new Floor(setup_floor1);
+  Floor* floor4 = new Floor(setup_floor1);
+  populateFloor(floor1);
+  populateFloor(floor2);
+  populateFloor(floor3);
+  populateFloor(floor4);
 
-  populateFloor(floor1, glm::vec3(0.0f, 0.0f, 0.0f));
-  populateFloor(floor2, glm::vec3(0.0f, 0.0f, 0.0f));
-  floor1->updateTransform();
-  floor2->updateTransform();
+  floor1->setTransform(glm::vec3(-4.0f, 0.0f, 0.0f));
+  floor2->setTransform(glm::vec3(-4.0f, 0.0f, 9.0f));
+  floor3->setTransform(glm::vec3(-4.0f, 0.0f, 18.0f));
+  floor4->setTransform(glm::vec3(-4.0f, 0.0f, 27.0f));
+
   floors.push_back(floor1);
   floors.push_back(floor2);
+  floors.push_back(floor3);
+  floors.push_back(floor4);
 }
 
 Scene::Scene(Scene const& src) { *this = src; }
@@ -59,19 +66,31 @@ Scene& Scene::operator=(Scene const& rhs) {
 void Scene::update(std::array<bool, 1024> keys) {
   float offset = 0.0f;
   if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT]) {
-    offset -= 0.001f;
+    offset -= 0.01f;
   }
   if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT]) {
-    offset += 0.001f;
+    offset += 0.01f;
   }
+  if (this->floors[0]->getPosition().z < -9.0f) {
+    // front floor is behind us, delete it and stack a new one
+    delete this->floors[0];
+    this->floors.pop_front();
+    // TODO: rand floor
+    glm::vec3 floorPos = this->floors.back()->getPosition();
+    floorPos.z += 9.0f;
+    Floor* newFloor = new Floor(setup_floor1);
+    populateFloor(newFloor);
+    newFloor->setTransform(floorPos);
+    this->floors.push_back(newFloor);
+  }
+  glm::vec3 pos = this->floors[0]->getPosition();
+  // std::cout << pos.x << "|" << pos.y << "|" << pos.z << std::endl;
   for (auto flr : this->floors) {
-    // flr->updateTransform();
     flr->move(glm::vec3(offset, 0.0f, -0.01f));
   }
 }
 
 void Scene::draw() {
-  // floors[0]->move(glm::vec3(0.0f, 0.0f, -0.00001f));
   for (const auto& flr : floors) {
     for (const auto& model : flr->models) {
       this->_renderer->draw(model.getRenderAttrib());
@@ -79,27 +98,33 @@ void Scene::draw() {
   }
 }
 
-void Scene::populateFloor(Floor* floor_ptr, glm::vec3 startPosition) {
+void Scene::populateFloor(Floor* floor_ptr) {
   for (int i = 0; i < 9; i++) {
     for (int j = 0; j < 9; j++) {
       int block_id = floor_ptr->setup[i * 9 + j];
       if (block_id == 0) {
         Model mfloor(*cubeModel);
-        mfloor.setTransform(glm::vec3(
-            startPosition.x - j, startPosition.y - 1.0f, startPosition.z - i));
-        mfloor.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
+        mfloor.setTransform(glm::vec3(j, -1.0f, i));
+        mfloor.setColor(glm::vec3(
+            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
+            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
+            static_cast<float>(rand()) / static_cast<float>(RAND_MAX)));
         floor_ptr->models.push_back(mfloor);
 
         Model mroof(*cubeModel);
-        mroof.setTransform(glm::vec3(
-            startPosition.x - j, startPosition.y + 1.0f, startPosition.z - i));
-        mroof.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
+        mroof.setTransform(glm::vec3(j, 1.0f, i));
+        mroof.setColor(glm::vec3(
+            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
+            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
+            static_cast<float>(rand()) / static_cast<float>(RAND_MAX)));
         floor_ptr->models.push_back(mroof);
       } else if (block_id != 0) {
         Model mwall(*cubeModel);
-        mwall.setTransform(glm::vec3(startPosition.x - j, startPosition.y,
-                                     startPosition.z - i));
-        mwall.setColor(glm::vec3(1.0f, 0.0f, 0.0f));
+        mwall.setTransform(glm::vec3(j, 0.0f, i));
+        mwall.setColor(glm::vec3(
+            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
+            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
+            static_cast<float>(rand()) / static_cast<float>(RAND_MAX)));
         floor_ptr->models.push_back(mwall);
       }
     }
@@ -136,3 +161,7 @@ void Floor::updateTransform() {
     model.setTransform(this->transform * model.getTransform());
   }
 }
+
+glm::vec3 Floor::getPosition() { return (_position); }
+
+glm::vec3 Floor::getRotation() { return (_rotation); }

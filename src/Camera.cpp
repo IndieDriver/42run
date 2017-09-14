@@ -14,8 +14,8 @@ Camera::Camera(glm::vec3 position, glm::vec3 targetPosition, int w, int h) {
   verAngle = asinf(direction.y);
   horAngle = atan2(direction.x, direction.z);
   proj = glm::perspective(
-      45.0f, static_cast<float>(width) / static_cast<float>(height), 1.0f,
-      1000.0f);
+      45.0f, static_cast<float>(width) / static_cast<float>(height), 0.1f,
+      100.0f);
   update();
 }
 

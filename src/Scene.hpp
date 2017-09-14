@@ -1,4 +1,5 @@
 #pragma once
+#include <deque>
 #include "Model.hpp"
 #include "Renderer.hpp"
 #include "Shader.hpp"
@@ -15,6 +16,8 @@ class Floor {
   void setTransform(glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f),
                     glm::vec3 rot = glm::vec3(0.0f, 0.0f, 0.0f),
                     glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f));
+  glm::vec3 getPosition();
+  glm::vec3 getRotation();
 
  private:
   glm::vec3 _position;
@@ -33,12 +36,12 @@ class Scene {
   virtual ~Scene(void);
   Scene& operator=(Scene const& rhs);
   std::vector<Model> models;
-  std::vector<Floor*> floors;
+  std::deque<Floor*> floors;
   Model* cubeModel;
   void init();
   void update(std::array<bool, 1024> keys);
   void draw();
-  void populateFloor(Floor* floor_ptr, glm::vec3 startPosition);
+  void populateFloor(Floor* floor_ptr);
 
  private:
   Scene(void);
