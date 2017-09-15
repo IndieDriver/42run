@@ -76,7 +76,6 @@ void Renderer::printRenderAttribs() {
 }
 
 TextRenderer::TextRenderer(void) {
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   Shader shader("shaders/text.vert", "shaders/text.frag");
   this->_shader_id = shader.id;
 
@@ -136,6 +135,8 @@ TextRenderer::TextRenderer(void) {
 void TextRenderer::renderText(float pos_x, float pos_y, float scale,
                               std::string text, glm::vec3 color,
                               glm::mat4 ortho) {
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glUseProgram(_shader_id);
   glUniformMatrix4fv(glGetUniformLocation(_shader_id, "proj"), 1, GL_FALSE,
                      glm::value_ptr(ortho));
@@ -167,6 +168,7 @@ void TextRenderer::renderText(float pos_x, float pos_y, float scale,
   }
   glBindVertexArray(0);
   glBindTexture(GL_TEXTURE_2D, 0);
+  glDisable(GL_BLEND);
 }
 
 VAO::VAO(std::vector<Vertex> vertices) {
