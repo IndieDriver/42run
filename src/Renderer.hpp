@@ -2,8 +2,17 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include <algorithm>
+#include <map>
+#include "Shader.hpp"
 #include "env.hpp"
 #include "run.hpp"
+
+struct Character {
+  GLuint textureID;      // ID handle of the glyph texture
+  glm::ivec2 size;       // Size of glyph
+  glm::ivec2 bearing;    // Offset from baseline to left/top of glyph
+  GLuint advanceOffset;  // Offset to advance to next glyph
+};
 
 struct Texture {
   Texture(std::string filename);
@@ -36,19 +45,39 @@ struct RenderAttrib {
   }
 };
 
+class TextRenderer {
+ public:
+  TextRenderer(void);
+  void renderText(float pos_x, float pos_y, float scale, std::string text,
+                  glm::vec3 color, glm::mat4 ortho);
+
+ private:
+  std::map<GLchar, Character> _characters;
+  GLuint _vao;
+  GLuint _vbo;
+  GLuint _shader_id;
+};
+
 class Renderer {
  public:
-  Renderer(void);
+  Renderer(int width, int height);
   Renderer(Renderer const& src);
   virtual ~Renderer(void);
   Renderer& operator=(Renderer const& rhs);
   void addRenderAttrib(const RenderAttrib& renderAttrib);
+  void renderText(float pos_x, float pos_y, float scale, std::string text,
+                  glm::vec3 color);
   void draw();
   void flush();
-  glm::mat4 view;
-  glm::mat4 proj;
   void printRenderAttribs();
 
+  TextRenderer textRenderer;
+  glm::mat4 view;
+  glm::mat4 proj;
+
  private:
+  int _width;
+  int _height;
+  Renderer(void);
   std::vector<RenderAttrib> _renderAttribs;
 };
