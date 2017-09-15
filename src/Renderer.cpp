@@ -116,7 +116,7 @@ VAO::VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices) {
   glEnableVertexAttribArray(1);
 }
 
-Texture::Texture(std::string filename) {
+Texture::Texture(std::string filename) : id(-1) {
   int texWidth;
   int texHeight;
   int texChannels;

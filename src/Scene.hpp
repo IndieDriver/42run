@@ -43,6 +43,9 @@ class Scene {
   Scene& operator=(Scene const& rhs);
   std::vector<Model> models;
   std::deque<Floor*> floors;
+  std::vector<Texture*> floor_textures;
+  std::vector<Texture*> wall_textures;
+  std::vector<Texture*> root_textures;
   Model* cubeModel;
   void init();
   void update(std::array<bool, 1024> keys, float deltaTime);

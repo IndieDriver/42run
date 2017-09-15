@@ -22,6 +22,8 @@ class Model {
   glm::mat4 getTransform();
   void updateTransform();
 
+  void setTexture(Texture* texture);
+
  private:
   Model(void);
   RenderAttrib _renderAttrib;

@@ -57,3 +57,7 @@ void Model::updateTransform() {
 const RenderAttrib Model::getRenderAttrib() const {
   return (this->_renderAttrib);
 }
+
+void Model::setTexture(Texture* texture) {
+  this->_renderAttrib.texture = texture;
+}

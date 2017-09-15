@@ -32,12 +32,15 @@ int main() {
   Camera camera(glm::vec3(0.0f, 0.3f, -1.0f), glm::vec3(0.0f, 0.3f, 0.0f),
                 env.width, env.height);
   Texture tex_ground("textures/0.png");
+  Texture tex_wall("textures/grey_wall.jpg");
   VAO vao_cube(cube_vertices, cube_elements);
   Model cubeModel =
-      Model(shader.id, &vao_cube, &tex_ground, glm::vec3(0.0f, 0.0f, 0.0f),
+      Model(shader.id, &vao_cube, &tex_wall, glm::vec3(0.0f, 0.0f, 0.0f),
             glm::vec3(0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
   Renderer renderer;
   Scene scene(shader, &renderer);
+  scene.floor_textures.push_back(&tex_ground);
+  scene.wall_textures.push_back(&tex_wall);
   scene.cubeModel = &cubeModel;
   scene.init();
   while (!glfwWindowShouldClose(env.window)) {
