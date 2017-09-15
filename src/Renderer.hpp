@@ -8,10 +8,10 @@
 #include "run.hpp"
 
 struct Character {
-  GLuint textureID;      // ID handle of the glyph texture
-  glm::ivec2 size;       // Size of glyph
-  glm::ivec2 bearing;    // Offset from baseline to left/top of glyph
-  GLuint advanceOffset;  // Offset to advance to next glyph
+  GLuint textureID;
+  glm::ivec2 size;
+  glm::ivec2 bearing;
+  GLuint advanceOffset;
 };
 
 struct Texture {
@@ -36,7 +36,11 @@ struct RenderAttrib {
 
   bool operator<(const struct RenderAttrib& rhs) const {
     if (this->shader == rhs.shader) {
-      return (this->vao->vao < rhs.vao->vao);
+      if (this->texture != nullptr && rhs.texture != nullptr) {
+        return (this->texture->id < rhs.texture->id);
+      } else {
+        return (this->vao->vao < rhs.vao->vao);
+      }
     } else if (this->shader < rhs.shader) {
       return this->shader < rhs.shader;
     } else {
@@ -46,6 +50,13 @@ struct RenderAttrib {
 };
 
 class TextRenderer {
+  struct Character {
+    GLuint textureID;
+    glm::ivec2 size;
+    glm::ivec2 bearing;
+    GLuint advanceOffset;
+  };
+
  public:
   TextRenderer(void);
   void renderText(float pos_x, float pos_y, float scale, std::string text,

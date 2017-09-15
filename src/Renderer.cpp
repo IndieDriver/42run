@@ -25,6 +25,7 @@ void Renderer::addRenderAttrib(const RenderAttrib &renderAttrib) {
 
 void Renderer::draw() {
   std::sort(_renderAttribs.begin(), _renderAttribs.end());
+  // printRenderAttribs();
   int shader_id = -1;
   int texture_id = -1;
   for (const auto &attrib : this->_renderAttribs) {
@@ -70,7 +71,11 @@ void Renderer::flush() { this->_renderAttribs.clear(); }
 void Renderer::printRenderAttribs() {
   std::cout << "------------" << std::endl;
   for (const auto &attrib : this->_renderAttribs) {
-    std::cout << attrib.shader << " | " << attrib.vao->vao << std::endl;
+    std::cout << attrib.shader << " | " << attrib.vao->vao;
+    if (attrib.texture != nullptr) {
+      std::cout << " | " << attrib.texture->id;
+    }
+    std::cout << std::endl;
   }
   std::cout << "------------" << std::endl;
 }
