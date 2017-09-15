@@ -2,13 +2,13 @@
 
 Model::Model(void){};
 
-Model::Model(GLuint shader, VAO* vao, glm::vec3 color, glm::vec3 pos,
+Model::Model(GLuint shader, VAO* vao, Texture* texture, glm::vec3 pos,
              glm::vec3 rot, glm::vec3 scale)
     : _position(pos), _rotation(rot), _scale(scale) {
   this->_renderAttrib.shader = shader;
   this->_renderAttrib.vao = vao;
   this->_renderAttrib.transforms.push_back(glm::mat4(1.0f));
-  this->_renderAttrib.color = color;
+  this->_renderAttrib.texture = texture;
   updateTransform();
 }
 
@@ -53,9 +53,6 @@ void Model::updateTransform() {
   this->_renderAttrib.transforms[0] =
       mat_translation * mat_rotation * mat_scale;
 }
-// void Model::update() {}
-
-void Model::setColor(glm::vec3 color) { this->_renderAttrib.color = color; }
 
 const RenderAttrib Model::getRenderAttrib() const {
   return (this->_renderAttrib);

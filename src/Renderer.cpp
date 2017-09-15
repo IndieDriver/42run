@@ -1,4 +1,6 @@
 #include "Renderer.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 Renderer::Renderer(void) {}
 
@@ -8,26 +10,37 @@ Renderer::~Renderer(void) {}
 
 Renderer &Renderer::operator=(Renderer const &rhs) {
   if (this != &rhs) {
+    this->view = rhs.view;
+    this->proj = rhs.proj;
+    this->_renderAttribs = rhs._renderAttribs;
   }
   return (*this);
 }
 
 void Renderer::addRenderAttrib(const RenderAttrib &renderAttrib) {
-  renderAttribs.push_back(renderAttrib);
+  this->_renderAttribs.push_back(renderAttrib);
 }
 
 void Renderer::draw() {
-  std::sort(renderAttribs.begin(), renderAttribs.end());
+  std::sort(_renderAttribs.begin(), _renderAttribs.end());
   int shader_id = -1;
-  for (const auto &attrib : this->renderAttribs) {
+  int texture_id = -1;
+  for (const auto &attrib : this->_renderAttribs) {
     if (attrib.shader != shader_id) {
       glUseProgram(attrib.shader);
       shader_id = attrib.shader;
     }
     if (shader_id != -1) {
+      if (attrib.texture != nullptr) {
+        if (attrib.texture->id != texture_id) {
+          glActiveTexture(GL_TEXTURE0);
+          glBindTexture(GL_TEXTURE_2D, attrib.texture->id);
+          texture_id = attrib.texture->id;
+        }
+      } else {
+        glBindTexture(GL_TEXTURE_2D, 0);
+      }
       glm::mat4 mvp = this->proj * this->view * attrib.transforms[0];
-      glUniform3fv(glGetUniformLocation(shader_id, "color"), 1,
-                   glm::value_ptr(attrib.color));
       glUniformMatrix4fv(glGetUniformLocation(attrib.shader, "MVP"), 1,
                          GL_FALSE, static_cast<GLfloat *>(glm::value_ptr(mvp)));
       if (attrib.vao->ebo != -1) {
@@ -43,11 +56,11 @@ void Renderer::draw() {
   }
 }
 
-void Renderer::flush() { renderAttribs.clear(); }
+void Renderer::flush() { this->_renderAttribs.clear(); }
 
 void Renderer::printRenderAttribs() {
   std::cout << "------------" << std::endl;
-  for (const auto &attrib : this->renderAttribs) {
+  for (const auto &attrib : this->_renderAttribs) {
     std::cout << attrib.shader << " | " << attrib.vao->vao << std::endl;
   }
   std::cout << "------------" << std::endl;
@@ -73,7 +86,7 @@ VAO::VAO(std::vector<Vertex> vertices) {
                         (GLvoid *)offsetof(Vertex, uv));
 
   glEnableVertexAttribArray(0);
-  // glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(1);
 }
 
 VAO::VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices) {
@@ -100,5 +113,33 @@ VAO::VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices) {
                indices.data(), GL_STATIC_DRAW);
 
   glEnableVertexAttribArray(0);
-  // glEnableVertexAttribArray(1);
+  glEnableVertexAttribArray(1);
+}
+
+Texture::Texture(std::string filename) {
+  int texWidth;
+  int texHeight;
+  int texChannels;
+  stbi_set_flip_vertically_on_load(true);
+  stbi_uc *pixels = stbi_load(filename.c_str(), &texWidth, &texHeight,
+                              &texChannels, STBI_rgb_alpha);
+  if (pixels != nullptr) {
+    glGenTextures(1, &this->id);
+
+    glBindTexture(GL_TEXTURE_2D, this->id);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texWidth, texHeight, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, pixels);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    stbi_image_free(pixels);
+    glBindTexture(GL_TEXTURE_2D, 0);
+  } else {
+    std::cerr << "Invalid texture file: " << filename << std::endl;
+  }
 }

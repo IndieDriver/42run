@@ -3,20 +3,26 @@
 #include "env.hpp"
 #include "run.hpp"
 
+struct Texture {
+  Texture(std::string filename);
+  GLuint id;
+};
+
 struct VAO {
+  VAO(std::vector<Vertex> vertices);
+  VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices);
   GLuint vao;
   GLuint ebo;
   GLsizei vertices_size;
   GLsizei indices_size;
-  VAO(std::vector<Vertex> vertices);
-  VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices);
 };
 
 struct RenderAttrib {
   VAO* vao;
   GLuint shader;
   std::vector<glm::mat4> transforms;
-  glm::vec3 color;  // TODO: replace by texture
+  Texture* texture;
+
   bool operator<(const struct RenderAttrib& rhs) const {
     if (this->shader == rhs.shader) {
       return (this->vao->vao < rhs.vao->vao);
@@ -42,5 +48,5 @@ class Renderer {
   void printRenderAttribs();
 
  private:
-  std::vector<RenderAttrib> renderAttribs;
+  std::vector<RenderAttrib> _renderAttribs;
 };

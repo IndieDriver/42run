@@ -126,26 +126,14 @@ void Scene::populateFloor(Floor* floor_ptr) {
       if (block_id == 0) {
         Model mfloor(*cubeModel);
         mfloor.setTransform(glm::vec3(j, -1.0f, i));
-        mfloor.setColor(glm::vec3(
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX)));
         floor_ptr->models.push_back(mfloor);
 
         Model mroof(*cubeModel);
         mroof.setTransform(glm::vec3(j, 1.0f, i));
-        mroof.setColor(glm::vec3(
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX)));
         floor_ptr->models.push_back(mroof);
       } else if (block_id != 0) {
         Model mwall(*cubeModel);
         mwall.setTransform(glm::vec3(j, 0.0f, i));
-        mwall.setColor(glm::vec3(
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX),
-            static_cast<float>(rand()) / static_cast<float>(RAND_MAX)));
         floor_ptr->models.push_back(mwall);
       }
     }

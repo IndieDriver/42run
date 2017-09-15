@@ -6,7 +6,7 @@
 
 class Model {
  public:
-  Model(GLuint shader, VAO* vao, glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f),
+  Model(GLuint shader, VAO* vao, Texture* texture,
         glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3 rot = glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f));
@@ -21,7 +21,6 @@ class Model {
   void setTransform(glm::mat4 transform);
   glm::mat4 getTransform();
   void updateTransform();
-  void setColor(glm::vec3 color);  // TODO: temporary, to remove
 
  private:
   Model(void);

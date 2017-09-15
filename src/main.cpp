@@ -19,20 +19,6 @@ std::vector<Vertex> cube_vertices = {
     {{-0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}},  {{-0.5f, 0.5f, -0.5f}, {0.0, 0.5f}},
     {{0.5f, -0.5f, 0.5f}, {0.0, 0.0}},    {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0}},
     {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},  {{0.5f, 0.5f, 0.5f}, {0.0, 1.0f}}};
-/*
-std::vector<Vertex> cube_vertices = {
-    {{0.5f, 0.5f, 0.5f}},    {{0.5f, -0.5f, 0.5f}},  {{0.5f, 0.5f, -0.5f}},
-    {{0.5f, 0.5f, -0.5f}},   {{0.5f, -0.5f, 0.5f}},  {{0.5f, -0.5f, -0.5f}},
-    {{0.5f, 0.5f, 0.5f}},    {{-0.5f, 0.5f, 0.5f}},  {{0.5f, -0.5f, 0.5f}},
-    {{0.5f, -0.5f, 0.5f}},   {{-0.5f, -0.5f, 0.5f}}, {{-0.5f, 0.5f, 0.5f}},
-    {{0.5f, 0.5f, 0.5f}},    {{-0.5f, 0.5f, -0.5f}}, {{-0.5f, 0.5f, 0.5f}},
-    {{0.5f, 0.5f, 0.5f}},    {{0.5f, 0.5f, -0.5f}},  {{-0.5f, 0.5f, -0.5f}},
-    {{-0.5f, -0.5f, -0.5f}}, {{-0.5f, -0.5f, 0.5f}}, {{-0.5f, 0.5f, 0.5f}},
-    {{-0.5f, -0.5f, -0.5f}}, {{-0.5f, 0.5f, -0.5f}}, {{-0.5f, 0.5f, 0.5f}},
-    {{-0.5f, -0.5f, -0.5f}}, {{-0.5f, 0.5f, -0.5f}}, {{0.5f, 0.5f, -0.5f}},
-    {{-0.5f, -0.5f, -0.5f}}, {{0.5f, 0.5f, -0.5f}},  {{0.5f, -0.5f, -0.5f}},
-    {{-0.5f, -0.5f, -0.5f}}, {{0.5f, -0.5f, 0.5f}},  {{-0.5f, -0.5f, 0.5f}},
-    {{-0.5f, -0.5f, -0.5f}}, {{0.5f, -0.5f, -0.5f}}, {{0.5f, -0.5f, 0.5f}}}; */
 
 std::vector<GLuint> cube_elements = {
     0,  1,  2,  2,  3,  0,  4,  5,  6,  6,  7,  4,  8,  9,  10, 10, 11, 8,
@@ -45,10 +31,11 @@ int main() {
 
   Camera camera(glm::vec3(0.0f, 0.3f, -1.0f), glm::vec3(0.0f, 0.3f, 0.0f),
                 env.width, env.height);
+  Texture tex_ground("textures/0.png");
   VAO vao_cube(cube_vertices, cube_elements);
-  Model cubeModel = Model(shader.id, &vao_cube, glm::vec3(1.0f, 0.0f, 0.0),
-                          glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f),
-                          glm::vec3(1.0f, 1.0f, 1.0f));
+  Model cubeModel =
+      Model(shader.id, &vao_cube, &tex_ground, glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
   Renderer renderer;
   Scene scene(shader, &renderer);
   scene.cubeModel = &cubeModel;
