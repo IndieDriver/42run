@@ -13,6 +13,7 @@ add_subdirectory(third-party/glfw)
 include_directories(third-party/glfw/include)
 include_directories(third-party/glad/include)
 include_directories(third-party/glm)
+include_directories(third-party/stb)
 include_directories(${OPENGL_INCLUDE_DIR})
 
 
