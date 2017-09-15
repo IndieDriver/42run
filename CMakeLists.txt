@@ -11,11 +11,14 @@ set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
 add_subdirectory(third-party/glfw)
 include_directories(third-party/glfw/include)
+
+add_subdirectory(third-party/freetype third-party/freetype/builds)
+include_directories(third-party/freetype/include)
+
 include_directories(third-party/glad/include)
 include_directories(third-party/glm)
 include_directories(third-party/stb)
 include_directories(${OPENGL_INCLUDE_DIR})
-
 
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -32,4 +35,4 @@ set(SOURCE_FILES
 
 add_executable(42run ${SOURCE_FILES})
 
-target_link_libraries(42run glfw ${GLFW_LIBRARIES})
+target_link_libraries(42run glfw freetype ${GLFW_LIBRARIES})

@@ -1,4 +1,6 @@
 #pragma once
+#include <ft2build.h>
+#include FT_FREETYPE_H
 #include <algorithm>
 #include "env.hpp"
 #include "run.hpp"

@@ -48,6 +48,8 @@ CMakeCache.txt
 CMakeFiles
 CMakeScripts
 cmake_install.cmake
+CPackConfig.cmake
+CPackSourceConfig.cmake
 
 # Executables
 *.exe
