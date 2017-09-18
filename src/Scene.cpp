@@ -26,7 +26,8 @@ const std::array<int, 81> setup_floor2 = {
 
 Scene::Scene(void) {}
 
-Scene::Scene(Shader shader, Renderer* renderer) : _renderer(renderer) {}
+Scene::Scene(Shader shader, Renderer* renderer)
+    : _renderer(renderer), _meter_counter(-1) {}
 
 void Scene::init() {
   Floor* floor1 = new Floor(setup_floor1);
@@ -105,6 +106,7 @@ void Scene::update(std::array<bool, 1024> keys, float deltaTime) {
   for (auto flr : this->floors) {
     flr->move(_player.offsetSinceLastFrame);
   }
+  this->_meter_counter -= _player.offsetSinceLastFrame.z;
 }
 
 void Scene::draw() {
@@ -115,6 +117,15 @@ void Scene::draw() {
   }
   this->_renderer->draw();
   this->_renderer->flush();
+  drawUI();
+}
+
+void Scene::drawUI() {
+  this->_renderer->renderText(
+      this->_renderer->getScreenWidth() - 100.0f,
+      this->_renderer->getScreenHeight() - 50.0f, 1.0f,
+      std::to_string(static_cast<int>(this->_meter_counter)),
+      glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
 void Scene::populateFloor(Floor* floor_ptr) {

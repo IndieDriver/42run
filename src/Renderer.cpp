@@ -80,6 +80,10 @@ void Renderer::printRenderAttribs() {
   std::cout << "------------" << std::endl;
 }
 
+int Renderer::getScreenWidth() { return (this->_width); }
+
+int Renderer::getScreenHeight() { return (this->_height); }
+
 TextRenderer::TextRenderer(void) {
   Shader shader("shaders/text.vert", "shaders/text.frag");
   this->_shader_id = shader.id;

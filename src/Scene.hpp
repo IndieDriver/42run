@@ -54,6 +54,8 @@ class Scene {
 
  private:
   Scene(void);
+  void drawUI();
   Renderer* _renderer;
   Player _player;
+  float _meter_counter;
 };

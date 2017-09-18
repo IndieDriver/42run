@@ -74,6 +74,8 @@ class Renderer {
   void draw();
   void flush();
   void printRenderAttribs();
+  int getScreenWidth();
+  int getScreenHeight();
 
   TextRenderer textRenderer;
   glm::mat4 view;

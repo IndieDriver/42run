@@ -55,8 +55,6 @@ int main() {
     renderer.proj = camera.proj;
     scene.update(env.inputHandler.keys, env.getDeltaTime());
     scene.draw();
-    renderer.renderText(env.width - 100.0f, env.height - 50.0f, 1.0f, "0",
-                        glm::vec3(0.0f, 0.0f, 0.0f));
     glfwSwapBuffers(env.window);
     GL_DUMP_ERROR("draw loop");
     if (glfwGetKey(env.window, GLFW_KEY_ESCAPE)) {
