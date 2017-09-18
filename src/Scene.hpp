@@ -1,7 +1,7 @@
 #pragma once
 #include <deque>
 #include <limits>
-#include "Model.hpp"
+#include "GameObject.hpp"
 #include "Renderer.hpp"
 #include "Shader.hpp"
 #include "run.hpp"
@@ -10,7 +10,7 @@ class Floor {
  public:
   std::array<int, 81> setup;
   glm::mat4 transform;
-  std::vector<Model> models;
+  std::vector<GameObject> models;
   Floor(std::array<int, 81> init);
   void move(glm::vec3 pos);
   void updateTransform();
@@ -26,6 +26,7 @@ class Floor {
   glm::vec3 _scale;
 };
 
+/*
 struct Player {
   float speed = {5.0f};
   glm::vec3 position = {0.0f, 0.0f, 0.0f};
@@ -33,7 +34,7 @@ struct Player {
 
   void update(std::array<bool, 1024> keys, float deltaTime);
   glm::vec3 offsetSinceLastFrame = {0.0f, 0.0f, 0.0f};
-};
+}; */
 
 class Scene {
  public:
@@ -41,14 +42,14 @@ class Scene {
   Scene(Scene const& src);
   virtual ~Scene(void);
   Scene& operator=(Scene const& rhs);
-  std::vector<Model> models;
   std::deque<Floor*> floors;
   std::vector<Texture*> floor_textures;
   std::vector<Texture*> wall_textures;
-  std::vector<Texture*> root_textures;
-  Model* cubeModel;
+  std::vector<Texture*> roof_textures;
+  World world;
+  GameObject* cubeModel;
   void init();
-  void update(std::array<bool, 1024> keys, float deltaTime);
+  void update(InputHandler& inputHandler, float deltaTime);
   void draw();
   void populateFloor(Floor* floor_ptr);
 
@@ -56,6 +57,7 @@ class Scene {
   Scene(void);
   void drawUI();
   Renderer* _renderer;
-  Player _player;
+  // Player _player;
+  GameObject* _player;
   float _meter_counter;
 };

@@ -27,7 +27,7 @@ set(SOURCE_FILES
         src/env.cpp
         src/Shader.cpp
         src/Camera.cpp
-        src/Model.cpp
+        src/GameObject.cpp
         src/Scene.cpp
         src/Renderer.cpp
         third-party/glad/src/glad.c

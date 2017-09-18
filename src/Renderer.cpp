@@ -203,6 +203,8 @@ VAO::VAO(std::vector<Vertex> vertices) {
 
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
+
+  calc_aabb(vertices);
 }
 
 VAO::VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices) {
@@ -230,6 +232,19 @@ VAO::VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices) {
 
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
+
+  calc_aabb(vertices);
+}
+
+void VAO::calc_aabb(std::vector<Vertex> vertices) {
+  for (const auto &vertex : vertices) {
+    if (vertex.position.x < aabb_min.x) aabb_min.x = vertex.position.x;
+    if (vertex.position.x > aabb_max.x) aabb_max.x = vertex.position.x;
+    if (vertex.position.y < aabb_min.y) aabb_min.y = vertex.position.y;
+    if (vertex.position.y > aabb_max.y) aabb_max.y = vertex.position.y;
+    if (vertex.position.z < aabb_min.z) aabb_min.z = vertex.position.z;
+    if (vertex.position.z > aabb_max.z) aabb_max.z = vertex.position.z;
+  }
 }
 
 Texture::Texture(std::string filename) : id(-1) {

@@ -1,5 +1,5 @@
 #include "Camera.hpp"
-#include "Model.hpp"
+#include "GameObject.hpp"
 #include "Renderer.hpp"
 #include "Scene.hpp"
 #include "Shader.hpp"
@@ -34,9 +34,10 @@ int main() {
   Texture tex_ground("textures/0.png");
   Texture tex_wall("textures/grey_wall.jpg");
   VAO vao_cube(cube_vertices, cube_elements);
-  Model cubeModel =
-      Model(shader.id, &vao_cube, &tex_wall, glm::vec3(0.0f, 0.0f, 0.0f),
-            glm::vec3(0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+  GameObject cubeModel =
+      GameObject(shader.id, &vao_cube, &tex_wall, nullptr, nullptr,
+                 glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f),
+                 glm::vec3(1.0f, 1.0f, 1.0f));
   Renderer renderer(env.width, env.height);
   Scene scene(shader, &renderer);
   scene.floor_textures.push_back(&tex_ground);
@@ -53,7 +54,7 @@ int main() {
     camera.update();
     renderer.view = camera.view;
     renderer.proj = camera.proj;
-    scene.update(env.inputHandler.keys, env.getDeltaTime());
+    scene.update(env.inputHandler, env.getDeltaTime());
     scene.draw();
     glfwSwapBuffers(env.window);
     GL_DUMP_ERROR("draw loop");

@@ -27,7 +27,11 @@ const std::array<int, 81> setup_floor2 = {
 Scene::Scene(void) {}
 
 Scene::Scene(Shader shader, Renderer* renderer)
-    : _renderer(renderer), _meter_counter(-1) {}
+    : _renderer(renderer), _meter_counter(-1) {
+  GameObject* player =
+      new GameObject(shader.id, nullptr, nullptr, new InputComponent(),
+                     new PhysicsComponent());
+}
 
 void Scene::init() {
   Floor* floor1 = new Floor(setup_floor1);
@@ -64,6 +68,7 @@ Scene& Scene::operator=(Scene const& rhs) {
   return (*this);
 }
 
+/*
 void Player::update(std::array<bool, 1024> keys, float deltaTime) {
   glm::vec3 backupPosition = this->position;
   if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT]) {
@@ -85,10 +90,12 @@ void Player::update(std::array<bool, 1024> keys, float deltaTime) {
   this->position.y = glm::clamp(this->position.y, 0.0f, 1.0f);
   this->velocity.y = glm::clamp(this->velocity.y, -10.0f, 3.0f);
   this->offsetSinceLastFrame = backupPosition - this->position;
-}
+} */
 
-void Scene::update(std::array<bool, 1024> keys, float deltaTime) {
-  this->_player.update(keys, deltaTime);
+void Scene::update(InputHandler& inputHandler, float deltaTime) {
+  world.update(inputHandler, deltaTime);
+  /*
+  this->_player->update(keys, deltaTime);
 
   if (this->floors[0]->getPosition().z < -9.0f) {
     // front floor is behind us, delete it and stack a new one
@@ -106,7 +113,7 @@ void Scene::update(std::array<bool, 1024> keys, float deltaTime) {
   for (auto flr : this->floors) {
     flr->move(_player.offsetSinceLastFrame);
   }
-  this->_meter_counter -= _player.offsetSinceLastFrame.z;
+  this->_meter_counter -= _player.offsetSinceLastFrame.z; */
 }
 
 void Scene::draw() {
@@ -133,17 +140,17 @@ void Scene::populateFloor(Floor* floor_ptr) {
     for (int j = 0; j < 9; j++) {
       int block_id = floor_ptr->setup[i * 9 + j];
       if (block_id == 0) {
-        Model mfloor(*cubeModel);
+        GameObject mfloor(*cubeModel);
         mfloor.setTransform(glm::vec3(j, -1.0f, i));
         mfloor.setTexture(this->floor_textures[0]);
         floor_ptr->models.push_back(mfloor);
 
-        Model mroof(*cubeModel);
+        GameObject mroof(*cubeModel);
         mroof.setTransform(glm::vec3(j, 1.0f, i));
         mroof.setTexture(this->floor_textures[0]);
         floor_ptr->models.push_back(mroof);
       } else if (block_id != 0) {
-        Model mwall(*cubeModel);
+        GameObject mwall(*cubeModel);
         mwall.setTransform(glm::vec3(j, 0.0f, i));
         mwall.setTexture(this->wall_textures[0]);
         floor_ptr->models.push_back(mwall);
