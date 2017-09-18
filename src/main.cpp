@@ -39,10 +39,10 @@ int main() {
                  glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f),
                  glm::vec3(1.0f, 1.0f, 1.0f));
   Renderer renderer(env.width, env.height);
-  Scene scene(shader, &renderer);
+  Scene scene(shader, &renderer, &vao_cube);
   scene.floor_textures.push_back(&tex_ground);
   scene.wall_textures.push_back(&tex_wall);
-  scene.cubeModel = &cubeModel;
+  // scene.cubeModel = &cubeModel;
   scene.init();
   while (!glfwWindowShouldClose(env.window)) {
     env.updateFpsCounter();

@@ -38,7 +38,7 @@ struct Player {
 
 class Scene {
  public:
-  Scene(Shader shader, Renderer* renderer);
+  Scene(Shader shader, Renderer* renderer, VAO* cube);
   Scene(Scene const& src);
   virtual ~Scene(void);
   Scene& operator=(Scene const& rhs);
@@ -47,11 +47,14 @@ class Scene {
   std::vector<Texture*> wall_textures;
   std::vector<Texture*> roof_textures;
   World world;
+  VAO* vao_cube;
   GameObject* cubeModel;
   void init();
   void update(InputHandler& inputHandler, float deltaTime);
   void draw();
-  void populateFloor(Floor* floor_ptr);
+  void populateFloor(GameObject* floor_ptr, std::array<int, 81> setup);
+
+  GLuint shader;
 
  private:
   Scene(void);

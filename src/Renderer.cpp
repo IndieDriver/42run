@@ -33,7 +33,7 @@ void Renderer::draw() {
       glUseProgram(attrib.shader);
       shader_id = attrib.shader;
     }
-    if (shader_id != -1) {
+    if (shader_id != -1 && attrib.vao != nullptr) {
       if (attrib.texture != nullptr) {
         if (attrib.texture->id != texture_id) {
           glActiveTexture(GL_TEXTURE0);
