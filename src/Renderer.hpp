@@ -7,13 +7,6 @@
 #include "env.hpp"
 #include "run.hpp"
 
-struct Character {
-  GLuint textureID;
-  glm::ivec2 size;
-  glm::ivec2 bearing;
-  GLuint advanceOffset;
-};
-
 struct Texture {
   Texture(std::string filename);
   GLuint id;

@@ -140,6 +140,7 @@ TextRenderer::TextRenderer(void) {
 void TextRenderer::renderText(float pos_x, float pos_y, float scale,
                               std::string text, glm::vec3 color,
                               glm::mat4 ortho) {
+  glDisable(GL_DEPTH_TEST);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glUseProgram(_shader_id);
@@ -172,6 +173,7 @@ void TextRenderer::renderText(float pos_x, float pos_y, float scale,
     }
   }
   glBindVertexArray(0);
+  glEnable(GL_DEPTH_TEST);
   glBindTexture(GL_TEXTURE_2D, 0);
   glDisable(GL_BLEND);
 }
