@@ -20,7 +20,7 @@ class GameObject {
  public:
   GameObject(GLuint shader, VAO* vao, Texture* texture,
              InputComponent* inputComponent, PhysicsComponent* physicsComponent,
-             glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f),
+             GameObject* parent, glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f),
              glm::vec3 rot = glm::vec3(0.0f, 0.0f, 0.0f),
              glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f));
   GameObject(GameObject const& src);
@@ -42,7 +42,7 @@ class GameObject {
   glm::vec3 position;
   glm::vec3 rotation;
   glm::vec3 scale;
-  std::vector<GameObject*> childrens;
+  GameObject* parent;
 
  private:
   GameObject(void);

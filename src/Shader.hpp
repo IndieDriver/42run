@@ -10,7 +10,7 @@ class Shader {
   virtual ~Shader(void);
   Shader &operator=(Shader const &rhs);
 
-  GLuint id = 0;
+  GLuint id;
   void use() const;
 
  private:

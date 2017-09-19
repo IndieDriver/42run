@@ -29,11 +29,11 @@ void Renderer::draw() {
   int shader_id = -1;
   int texture_id = -1;
   for (const auto &attrib : this->_renderAttribs) {
-    if (attrib.shader != shader_id) {
+    if (attrib.shader > 0 && attrib.shader != shader_id) {
       glUseProgram(attrib.shader);
       shader_id = attrib.shader;
     }
-    if (shader_id != -1 && attrib.vao != nullptr) {
+    if (shader_id > 0 && attrib.vao != nullptr) {
       if (attrib.texture != nullptr) {
         if (attrib.texture->id != texture_id) {
           glActiveTexture(GL_TEXTURE0);
@@ -71,7 +71,10 @@ void Renderer::flush() { this->_renderAttribs.clear(); }
 void Renderer::printRenderAttribs() {
   std::cout << "------------" << std::endl;
   for (const auto &attrib : this->_renderAttribs) {
-    std::cout << attrib.shader << " | " << attrib.vao->vao;
+    std::cout << attrib.shader;
+    if (attrib.vao != nullptr) {
+      std::cout << " | " << attrib.vao->vao;
+    }
     if (attrib.texture != nullptr) {
       std::cout << " | " << attrib.texture->id;
     }

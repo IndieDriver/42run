@@ -27,23 +27,23 @@ const std::array<int, 81> setup_floor2 = {
 Scene::Scene(void) {}
 
 Scene::Scene(Shader shader, Renderer* renderer, VAO* cube)
-    : _renderer(renderer), _meter_counter(-1) {
+    : shader(shader.id), _renderer(renderer), _meter_counter(-1) {
   this->vao_cube = cube;
   GameObject* player =
       new GameObject(shader.id, nullptr, nullptr, new InputComponent(),
-                     new PhysicsComponent());
+                     new PhysicsComponent(), nullptr);
   world.entities.push_back(player);
 }
 
 void Scene::init() {
   GameObject* floor1 =
-      new GameObject(shader, vao_cube, nullptr, nullptr, nullptr);
+      new GameObject(shader, vao_cube, nullptr, nullptr, nullptr, nullptr);
   GameObject* floor2 =
-      new GameObject(shader, vao_cube, nullptr, nullptr, nullptr);
+      new GameObject(shader, vao_cube, nullptr, nullptr, nullptr, nullptr);
   GameObject* floor3 =
-      new GameObject(shader, vao_cube, nullptr, nullptr, nullptr);
+      new GameObject(shader, vao_cube, nullptr, nullptr, nullptr, nullptr);
   GameObject* floor4 =
-      new GameObject(shader, vao_cube, nullptr, nullptr, nullptr);
+      new GameObject(shader, vao_cube, nullptr, nullptr, nullptr, nullptr);
 
   // Floor* floor1 = new Floor(setup_floor1);
   // Floor* floor2 = new Floor(setup_floor2);
@@ -135,12 +135,6 @@ void Scene::draw() {
   for (const auto entity : world.entities) {
     this->_renderer->addRenderAttrib(entity->getRenderAttrib());
   }
-  /*
-  for (const auto& flr : floors) {
-    for (const auto& model : flr->models) {
-      this->_renderer->addRenderAttrib(model.getRenderAttrib());
-    }
-  } */
   this->_renderer->draw();
   this->_renderer->flush();
   drawUI();
@@ -161,26 +155,17 @@ void Scene::populateFloor(GameObject* floor_ptr, std::array<int, 81> setup) {
       if (block_id == 0) {
         GameObject* mfloor =
             new GameObject(shader, vao_cube, this->floor_textures[0], nullptr,
-                           nullptr, glm::vec3(j, -1.0f, i));
-        // mfloor->setTransform(glm::vec3(j, -1.0f, i));
-        // mfloor->setTexture(this->floor_textures[0]);
-        floor_ptr->childrens.push_back(mfloor);
-
+                           nullptr, floor_ptr, glm::vec3(j, -1.0f, i));
         GameObject* mroof =
             new GameObject(shader, vao_cube, this->floor_textures[0], nullptr,
-                           nullptr, glm::vec3(j, 1.0f, i));
-        // GameObject* mroof = new GameObject(*cubeModel);
-        // mroof->setTransform(glm::vec3(j, 1.0f, i));
-        // mroof->setTexture(this->floor_textures[0]);
-        floor_ptr->childrens.push_back(mroof);
+                           nullptr, floor_ptr, glm::vec3(j, 1.0f, i));
+        world.entities.push_back(mfloor);
+        world.entities.push_back(mroof);
       } else if (block_id != 0) {
         GameObject* mwall =
-            new GameObject(shader, vao_cube, this->floor_textures[0], nullptr,
-                           nullptr, glm::vec3(j, 1.0f, i));
-        // GameObject* mwall = new GameObject(*cubeModel);
-        // mwall->setTransform(glm::vec3(j, 0.0f, i));
-        // mwall->setTexture(this->wall_textures[0]);
-        floor_ptr->childrens.push_back(mwall);
+            new GameObject(shader, vao_cube, this->wall_textures[0], nullptr,
+                           nullptr, floor_ptr, glm::vec3(j, 0.0f, i));
+        world.entities.push_back(mwall);
       }
     }
   }

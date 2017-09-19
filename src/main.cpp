@@ -35,7 +35,7 @@ int main() {
   Texture tex_wall("textures/grey_wall.jpg");
   VAO vao_cube(cube_vertices, cube_elements);
   GameObject cubeModel =
-      GameObject(shader.id, &vao_cube, &tex_wall, nullptr, nullptr,
+      GameObject(shader.id, &vao_cube, &tex_wall, nullptr, nullptr, nullptr,
                  glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f),
                  glm::vec3(1.0f, 1.0f, 1.0f));
   Renderer renderer(env.width, env.height);

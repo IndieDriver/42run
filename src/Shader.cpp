@@ -12,7 +12,8 @@ Shader &Shader::operator=(Shader const &rhs) {
   }
   return (*this);
 }
-Shader::Shader(std::string vertexFilename, std::string fragmentFilename) {
+Shader::Shader(std::string vertexFilename, std::string fragmentFilename)
+    : id(-1) {
   GLuint vertexID;
   GLuint fragID;
   GLint err = -1;

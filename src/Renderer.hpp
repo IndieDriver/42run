@@ -33,7 +33,8 @@ struct RenderAttrib {
   Texture* texture;
 
   bool operator<(const struct RenderAttrib& rhs) const {
-    if (this->shader == rhs.shader) {
+    if (this->shader == rhs.shader && this->vao != nullptr &&
+        rhs.vao != nullptr) {
       if (this->texture != nullptr && rhs.texture != nullptr) {
         return (this->texture->id < rhs.texture->id);
       } else {

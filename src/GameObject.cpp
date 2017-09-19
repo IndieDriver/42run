@@ -35,9 +35,14 @@ GameObject::GameObject(void){};
 
 GameObject::GameObject(GLuint shader, VAO* vao, Texture* texture,
                        InputComponent* inputComponent,
-                       PhysicsComponent* physicsComponent, glm::vec3 pos,
-                       glm::vec3 rot, glm::vec3 sca)
-    : position(pos), rotation(rot), scale(sca) {
+                       PhysicsComponent* physicsComponent, GameObject* parent,
+                       glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
+    : position(pos),
+      rotation(rot),
+      scale(sca),
+      parent(parent),
+      inputComponent(inputComponent),
+      physicsComponent(physicsComponent) {
   this->_renderAttrib.shader = shader;
   this->_renderAttrib.vao = vao;
   this->_renderAttrib.transforms.push_back(glm::mat4(1.0f));
@@ -59,9 +64,12 @@ GameObject::~GameObject(void) {}
 GameObject& GameObject::operator=(GameObject const& rhs) {
   if (this != &rhs) {
     this->_renderAttrib = rhs._renderAttrib;
+    this->inputComponent = rhs.inputComponent;
+    this->physicsComponent = rhs.physicsComponent;
     this->position = rhs.position;
     this->rotation = rhs.rotation;
     this->scale = rhs.scale;
+    this->parent = rhs.parent;
   }
   return (*this);
 }
@@ -73,6 +81,16 @@ void GameObject::update(World& world, InputHandler& inputHandler) {
   if (physicsComponent != nullptr) {
     physicsComponent->update(*this, world);
   }
+  /*
+  if (this->parent != nullptr) {
+    this->updateTransform();
+    this->parent->updateTransform();
+    this->setTransform(this->parent->getTransform() * this->getTransform());
+    // print_matrix(this->getTransform());
+  } */
+  // this->updateTransform();
+  updateTransform();
+  // print_matrix(this->getTransform());
 }
 
 void GameObject::setTransform(glm::vec3 pos, glm::vec3 rot, glm::vec3 sca) {
@@ -87,7 +105,7 @@ void GameObject::setTransform(glm::mat4 transform) {
 }
 
 glm::mat4 GameObject::getTransform() {
-  updateTransform();
+  // updateTransform();
   return (this->_renderAttrib.transforms[0]);
 }
 
@@ -101,6 +119,11 @@ void GameObject::updateTransform() {
   glm::mat4 mat_scale = glm::scale(scale);
   this->_renderAttrib.transforms[0] =
       mat_translation * mat_rotation * mat_scale;
+  if (this->parent != nullptr) {
+    this->parent->updateTransform();
+    this->_renderAttrib.transforms[0] =
+        this->parent->getTransform() * this->_renderAttrib.transforms[0];
+  }
 }
 
 const RenderAttrib GameObject::getRenderAttrib() const {
