@@ -12,7 +12,6 @@ class Scene {
   Scene(Scene const& src);
   virtual ~Scene(void);
   Scene& operator=(Scene const& rhs);
-  // std::deque<Floor*> floors;
   std::deque<GameObject*> floors;
   std::vector<Texture*> floor_textures;
   std::vector<Texture*> wall_textures;

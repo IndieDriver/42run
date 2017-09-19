@@ -8,17 +8,24 @@ void World::update(InputHandler& inputHandler, float deltaT) {
 }
 
 bool World::collide(GameObject& gameObject) {
-  for (auto& entity : entities) {
-    if (entity != &gameObject) {
-      glm::vec4 aabb1_min_wspace =
-          gameObject.getTransform() * glm::vec4(gameObject.getAABBmin(), 1.0f);
-      glm::vec4 aabb1_max_wspace =
-          gameObject.getTransform() * glm::vec4(gameObject.getAABBmax(), 1.0f);
+  gameObject.updateTransform();
+  glm::vec4 aabb1_min_wspace =
+      gameObject.getTransform() * glm::vec4(gameObject.getAABBmin(), 1.0f);
+  glm::vec4 aabb1_max_wspace =
+      gameObject.getTransform() * glm::vec4(gameObject.getAABBmax(), 1.0f);
+  //  print_vec4(aabb1_min_wspace);
+  // print_vec4(aabb1_max_wspace);
 
+  for (auto entity : entities) {
+    if (entity != &gameObject) {
+      entity->updateTransform();
       glm::vec4 aabb2_min_wspace =
           entity->getTransform() * glm::vec4(entity->getAABBmin(), 1.0f);
       glm::vec4 aabb2_max_wspace =
           entity->getTransform() * glm::vec4(entity->getAABBmax(), 1.0f);
+
+      // print_vec4(aabb1_min_wspace);
+      // print_vec4(aabb2_min_wspace);
 
       return (aabb1_max_wspace.x > aabb2_min_wspace.x &&
               aabb1_min_wspace.x < aabb2_max_wspace.x &&
@@ -50,22 +57,20 @@ GameObject::GameObject(GLuint shader, VAO* vao, Texture* texture,
   if (vao != nullptr) {
     this->_aabb_min = vao->aabb_min;
     this->_aabb_max = vao->aabb_max;
+    print_vec3(this->_aabb_min);
+    print_vec3(this->_aabb_max);
   } else {
     this->_aabb_min = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->_aabb_max = glm::vec3(0.0f, 0.0f, 0.0f);
+    this->_aabb_max = glm::vec3(0.5f, 0.5f, 0.5f);
   }
-  updateTransform();
+  // updateTransform();
 }
 
-GameObject::GameObject(GameObject const& src) {
-  std::cout << "cpy cstor" << std::endl;
-  *this = src;
-}
+GameObject::GameObject(GameObject const& src) { *this = src; }
 
 GameObject::~GameObject(void) {}
 
 GameObject& GameObject::operator=(GameObject const& rhs) {
-  std::cout << "assign op" << std::endl;
   if (this != &rhs) {
     this->_renderAttrib = rhs._renderAttrib;
     this->_renderAttrib.shader = rhs._renderAttrib.shader;
@@ -79,6 +84,8 @@ GameObject& GameObject::operator=(GameObject const& rhs) {
     this->scale = rhs.scale;
     this->parent = rhs.parent;
     this->positionRelative = rhs.positionRelative;
+    this->_aabb_min = rhs._aabb_min;
+    this->_aabb_max = rhs._aabb_max;
   }
   return (*this);
 }
@@ -91,14 +98,6 @@ void GameObject::update(World& world, InputHandler& inputHandler) {
   if (physicsComponent != nullptr) {
     physicsComponent->update(*this, world);
   }
-  /*
-  if (this->parent != nullptr) {
-    this->updateTransform();
-    this->parent->updateTransform();
-    this->setTransform(this->parent->getTransform() * this->getTransform());
-    // print_matrix(this->getTransform());
-  } */
-  // this->updateTransform();
   updateTransform();
   this->positionRelative = this->position - oldPosition;
 }
@@ -115,7 +114,6 @@ void GameObject::setTransform(glm::mat4 transform) {
 }
 
 glm::mat4 GameObject::getTransform() {
-  // updateTransform();
   return (this->_renderAttrib.transforms[0]);
 }
 
@@ -167,10 +165,10 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
 
   gameObject.position.y = glm::clamp(gameObject.position.y, 0.0f, 1.0f);
   this->velocity.y = glm::clamp(this->velocity.y, -10.0f, 3.0f);
-  /*
   if (world.collide(gameObject)) {
+    std::cout << "collide" << std::endl;
     gameObject.position = backupPosition;  // Rollback position
-  } */
+  }
 }
 
 InputComponent::InputComponent(void){};
