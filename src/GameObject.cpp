@@ -2,14 +2,14 @@
 
 void World::update(InputHandler& inputHandler, float deltaT) {
   this->deltaTime = deltaT;
-  for (GameObject* entity : entities) {
+  for (auto& entity : entities) {
     entity->update(*this, inputHandler);
   }
 }
 
 bool World::collide(GameObject& gameObject) {
-  for (GameObject* entity : entities) {
-    if (entity != nullptr && entity != &gameObject) {
+  for (auto& entity : entities) {
+    if (entity != &gameObject) {
       glm::vec4 aabb1_min_wspace =
           gameObject.getTransform() * glm::vec4(gameObject.getAABBmin(), 1.0f);
       glm::vec4 aabb1_max_wspace =
@@ -57,24 +57,34 @@ GameObject::GameObject(GLuint shader, VAO* vao, Texture* texture,
   updateTransform();
 }
 
-GameObject::GameObject(GameObject const& src) { *this = src; }
+GameObject::GameObject(GameObject const& src) {
+  std::cout << "cpy cstor" << std::endl;
+  *this = src;
+}
 
 GameObject::~GameObject(void) {}
 
 GameObject& GameObject::operator=(GameObject const& rhs) {
+  std::cout << "assign op" << std::endl;
   if (this != &rhs) {
     this->_renderAttrib = rhs._renderAttrib;
+    this->_renderAttrib.shader = rhs._renderAttrib.shader;
+    this->_renderAttrib.vao = rhs._renderAttrib.vao;
+    this->_renderAttrib.transforms = rhs._renderAttrib.transforms;
+    this->_renderAttrib.texture = rhs._renderAttrib.texture;
     this->inputComponent = rhs.inputComponent;
     this->physicsComponent = rhs.physicsComponent;
     this->position = rhs.position;
     this->rotation = rhs.rotation;
     this->scale = rhs.scale;
     this->parent = rhs.parent;
+    this->positionRelative = rhs.positionRelative;
   }
   return (*this);
 }
 
 void GameObject::update(World& world, InputHandler& inputHandler) {
+  glm::vec3 oldPosition = this->position;
   if (inputComponent != nullptr) {
     inputComponent->update(*this, world, inputHandler, this->physicsComponent);
   }
@@ -90,7 +100,7 @@ void GameObject::update(World& world, InputHandler& inputHandler) {
   } */
   // this->updateTransform();
   updateTransform();
-  // print_matrix(this->getTransform());
+  this->positionRelative = this->position - oldPosition;
 }
 
 void GameObject::setTransform(glm::vec3 pos, glm::vec3 rot, glm::vec3 sca) {
@@ -157,9 +167,10 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
 
   gameObject.position.y = glm::clamp(gameObject.position.y, 0.0f, 1.0f);
   this->velocity.y = glm::clamp(this->velocity.y, -10.0f, 3.0f);
+  /*
   if (world.collide(gameObject)) {
     gameObject.position = backupPosition;  // Rollback position
-  }
+  } */
 }
 
 InputComponent::InputComponent(void){};
@@ -179,11 +190,11 @@ void InputComponent::update(GameObject& gameObject, World& world,
                             PhysicsComponent* physicsComponent) {
   if (physicsComponent != nullptr) {
     if (inputHandler.keys[GLFW_KEY_A] || inputHandler.keys[GLFW_KEY_LEFT]) {
-      physicsComponent->velocity.x += 0.1f * world.deltaTime;
+      physicsComponent->velocity.x += 1.0f * world.deltaTime;
       // gameObject.position.x += 1.0f * world.deltaTime;
     }
     if (inputHandler.keys[GLFW_KEY_D] || inputHandler.keys[GLFW_KEY_RIGHT]) {
-      physicsComponent->velocity.x -= 0.1f * world.deltaTime;
+      physicsComponent->velocity.x -= 1.0f * world.deltaTime;
       // gameObject.position.x -= 1.0f * world.deltaTime;
     }
     if (inputHandler.keys[GLFW_KEY_SPACE]) {

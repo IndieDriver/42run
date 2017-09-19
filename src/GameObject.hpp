@@ -39,10 +39,11 @@ class GameObject {
   void updateTransform();
 
   void setTexture(Texture* texture);
-  glm::vec3 position;
-  glm::vec3 rotation;
-  glm::vec3 scale;
+  glm::vec3 position = {0.0f, 0.0f, 0.0f};
+  glm::vec3 rotation = {0.0f, 0.0f, 0.0f};
+  glm::vec3 scale = {1.0f, 1.0f, 1.0f};
   GameObject* parent;
+  glm::vec3 positionRelative = {0.0f, 0.0f, 0.0f};
 
  private:
   GameObject(void);
@@ -71,6 +72,6 @@ class PhysicsComponent {
   PhysicsComponent& operator=(PhysicsComponent const& rhs);
   void update(GameObject& gameObject, World& world);
 
-  glm::vec3 velocity;
+  glm::vec3 velocity = {0.0f, 0.0f, 0.0f};
   float speed;
 };
