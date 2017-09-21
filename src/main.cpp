@@ -54,4 +54,8 @@ int main() {
     }
   }
   glfwTerminate();
+  delete camera;
+  delete tex_ground;
+  delete tex_wall;
+  delete vao_cube;
 }
