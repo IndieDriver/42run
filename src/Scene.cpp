@@ -26,14 +26,17 @@ const std::array<int, 81> setup_floor2 = {
 
 Scene::Scene(void) {}
 
-Scene::Scene(Shader shader, Renderer* renderer, VAO* cube)
-    : shader(shader.id), _renderer(renderer), _meter_counter(-1) {
+Scene::Scene(Shader shader, Camera* camera, Renderer* renderer, VAO* cube)
+    : shader(shader.id),
+      _camera(camera),
+      _renderer(renderer),
+      _meter_counter(-1) {
   this->vao_cube = cube;
   GameObject* player =
       new GameObject(shader.id, nullptr, nullptr, new InputComponent(),
                      new PhysicsComponent(), nullptr);
-  player->aabb_min = glm::vec3(0.0f, 0.0f, 0.0f);
-  player->aabb_max = glm::vec3(0.5f, 0.5f, 0.5f);
+  player->aabb_min = glm::vec3(-0.2f, 0.1f, -0.2f);
+  player->aabb_max = glm::vec3(0.2f, 0.5f, 0.2f);
   player->is_collider = true;
   this->_player = player;
   world.entities.push_back(player);
@@ -49,15 +52,16 @@ void Scene::init() {
   GameObject* floor4 =
       new GameObject(shader, nullptr, nullptr, nullptr, nullptr, nullptr);
 
+  floor1->transform.position = glm::vec3(-4.0f, 0.5f, 0.0f);
+  print_vec3(floor1->transform.position);
+  floor2->transform.position = glm::vec3(-4.0f, 0.5f, 9.0f);
+  floor3->transform.position = glm::vec3(-4.0f, 0.5f, 18.0f);
+  floor4->transform.position = glm::vec3(-4.0f, 0.5f, 27.0f);
+
   populateFloor(floor1, setup_floor1);
   populateFloor(floor2, setup_floor2);
   populateFloor(floor3, setup_floor1);
   populateFloor(floor4, setup_floor1);
-
-  floor1->transform.position = glm::vec3(-4.0f, 0.5f, 0.0f);
-  floor2->transform.position = glm::vec3(-4.0f, 0.5f, 9.0f);
-  floor3->transform.position = glm::vec3(-4.0f, 0.5f, 18.0f);
-  floor4->transform.position = glm::vec3(-4.0f, 0.5f, 27.0f);
 
   world.entities.push_back(floor1);
   world.entities.push_back(floor2);
@@ -85,8 +89,9 @@ Scene& Scene::operator=(Scene const& rhs) {
 }
 
 void Scene::update(InputHandler& inputHandler, float deltaTime) {
-  if (this->floors.size() > 0 &&
-      this->floors.front()->transform.position.z < -9.0f) {
+  if (this->floors.size() > 0 && this->floors.front()->transform.position.z -
+                                         _player->transform.position.z <
+                                     -9.0f) {
     GameObject* oldFloor = this->floors.front();
     world.entities.erase(
         std::remove_if(world.entities.begin(), world.entities.end(),
@@ -102,6 +107,7 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
     this->floors.pop_front();
 
     glm::vec3 floorPos = this->floors.back()->transform.position;
+    print_vec3(floorPos);
     floorPos.z += 9.0f;
     // TODO: rand floor
     GameObject* newFloor =
@@ -113,11 +119,14 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
     this->floors.push_back(newFloor);
   }
   world.update(inputHandler, deltaTime);
-  for (auto flr : this->floors) {
-    if (this->_player != nullptr) {
-      flr->transform.position += -this->_player->positionRelative;
-    }
-  }
+
+  _camera->pos = _player->transform.position;
+  _camera->pos.y += 0.3f;
+
+  _camera->update();
+  _renderer->view = this->_camera->view;
+  _renderer->proj = this->_camera->proj;
+
   this->_meter_counter += this->_player->positionRelative.z;
 }
 

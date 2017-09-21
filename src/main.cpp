@@ -29,13 +29,14 @@ int main() {
   Env env(1280, 720);
   Shader shader("shaders/run.vert", "shaders/run.frag");
 
-  Camera camera(glm::vec3(0.0f, 0.3f, -1.0f), glm::vec3(0.0f, 0.3f, 0.0f),
-                env.width, env.height);
+  Camera *camera =
+      new Camera(glm::vec3(0.0f, 0.3f, -1.0f), glm::vec3(0.0f, 0.3f, 0.0f),
+                 env.width, env.height);
   Texture *tex_ground = new Texture("textures/0.png");
   Texture *tex_wall = new Texture("textures/grey_wall.jpg");
   VAO *vao_cube = new VAO(cube_vertices, cube_elements);
   Renderer renderer(env.width, env.height);
-  Scene scene(shader, &renderer, vao_cube);
+  Scene scene(shader, camera, &renderer, vao_cube);
   scene.floor_textures.push_back(tex_ground);
   scene.wall_textures.push_back(tex_wall);
   scene.init();
@@ -44,9 +45,6 @@ int main() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glfwPollEvents();
-    camera.update();
-    renderer.view = camera.view;
-    renderer.proj = camera.proj;
     scene.update(env.inputHandler, env.getDeltaTime());
     scene.draw();
     glfwSwapBuffers(env.window);

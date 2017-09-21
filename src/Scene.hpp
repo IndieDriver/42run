@@ -1,6 +1,7 @@
 #pragma once
 #include <deque>
 #include <limits>
+#include "Camera.hpp"
 #include "GameObject.hpp"
 #include "Renderer.hpp"
 #include "Shader.hpp"
@@ -8,7 +9,7 @@
 
 class Scene {
  public:
-  Scene(Shader shader, Renderer* renderer, VAO* cube);
+  Scene(Shader shader, Camera* camera, Renderer* renderer, VAO* cube);
   Scene(Scene const& src);
   virtual ~Scene(void);
   Scene& operator=(Scene const& rhs);
@@ -29,6 +30,7 @@ class Scene {
  private:
   Scene(void);
   void drawUI();
+  Camera* _camera;
   Renderer* _renderer;
   GameObject* _player;
   float _meter_counter;
