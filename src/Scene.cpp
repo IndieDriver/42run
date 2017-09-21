@@ -32,6 +32,9 @@ Scene::Scene(Shader shader, Renderer* renderer, VAO* cube)
   GameObject* player =
       new GameObject(shader.id, nullptr, nullptr, new InputComponent(),
                      new PhysicsComponent(), nullptr);
+  player->aabb_min = glm::vec3(0.0f, 0.0f, 0.0f);
+  player->aabb_max = glm::vec3(0.5f, 0.5f, 0.5f);
+  player->is_collider = true;
   this->_player = player;
   world.entities.push_back(player);
 }
@@ -51,10 +54,10 @@ void Scene::init() {
   populateFloor(floor3, setup_floor1);
   populateFloor(floor4, setup_floor1);
 
-  floor1->setTransform(glm::vec3(-4.0f, 0.5f, 0.0f));
-  floor2->setTransform(glm::vec3(-4.0f, 0.5f, 9.0f));
-  floor3->setTransform(glm::vec3(-4.0f, 0.5f, 18.0f));
-  floor4->setTransform(glm::vec3(-4.0f, 0.5f, 27.0f));
+  floor1->transform.position = glm::vec3(-4.0f, 0.5f, 0.0f);
+  floor2->transform.position = glm::vec3(-4.0f, 0.5f, 9.0f);
+  floor3->transform.position = glm::vec3(-4.0f, 0.5f, 18.0f);
+  floor4->transform.position = glm::vec3(-4.0f, 0.5f, 27.0f);
 
   world.entities.push_back(floor1);
   world.entities.push_back(floor2);
@@ -82,7 +85,8 @@ Scene& Scene::operator=(Scene const& rhs) {
 }
 
 void Scene::update(InputHandler& inputHandler, float deltaTime) {
-  if (this->floors.size() > 0 && this->floors.front()->position.z < -9.0f) {
+  if (this->floors.size() > 0 &&
+      this->floors.front()->transform.position.z < -9.0f) {
     GameObject* oldFloor = this->floors.front();
     world.entities.erase(
         std::remove_if(world.entities.begin(), world.entities.end(),
@@ -97,13 +101,13 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
         world.entities.end());
     this->floors.pop_front();
 
-    glm::vec3 floorPos = this->floors.back()->position;
+    glm::vec3 floorPos = this->floors.back()->transform.position;
     floorPos.z += 9.0f;
     // TODO: rand floor
     GameObject* newFloor =
         new GameObject(shader, nullptr, nullptr, nullptr, nullptr, nullptr);
     populateFloor(newFloor, setup_floor1);
-    newFloor->setTransform(floorPos);
+    newFloor->transform.position = floorPos;
 
     this->world.entities.push_back(newFloor);
     this->floors.push_back(newFloor);
@@ -111,7 +115,7 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
   world.update(inputHandler, deltaTime);
   for (auto flr : this->floors) {
     if (this->_player != nullptr) {
-      flr->position += -this->_player->positionRelative;
+      flr->transform.position += -this->_player->positionRelative;
     }
   }
   this->_meter_counter += this->_player->positionRelative.z;
