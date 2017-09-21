@@ -28,14 +28,9 @@ bool World::collide(GameObject& gameObject) {
                          (aabb1_max_wspace.z >= aabb2_min_wspace.z &&
                           aabb1_min_wspace.z <= aabb2_max_wspace.z);
       if (isColliding) {
-        /*        print_vec4(aabb1_min_wspace);
-                print_vec4(aabb1_max_wspace);
-                print_vec4(aabb2_min_wspace);
-                print_vec4(aabb2_max_wspace); */
         return (true);
       }
     }
-    // return (isColliding);
   }
   return (false);
 }
@@ -57,8 +52,6 @@ GameObject::GameObject(GLuint shader, VAO* vao, Texture* texture,
   this->_renderAttrib.transforms.push_back(glm::mat4(1.0f));
   this->_renderAttrib.texture = texture;
   if (vao != nullptr) {
-    /*print_vec3(vao->aabb_min);
-    print_vec3(vao->aabb_max); */
     this->aabb_min = vao->aabb_min;
     this->aabb_max = vao->aabb_max;
     this->is_collider = true;
@@ -66,7 +59,6 @@ GameObject::GameObject(GLuint shader, VAO* vao, Texture* texture,
     this->aabb_min = glm::vec3(0.0f, 0.0f, 0.0f);
     this->aabb_max = glm::vec3(0.0f, 0.0f, 0.0f);
     this->is_collider = false;
-    std::cout << "not collider" << std::endl;
   }
 }
 
@@ -147,12 +139,9 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
   gameObject.transform.position.y =
       glm::clamp(gameObject.transform.position.y, 0.0f, 1.0f);
   this->velocity.y = glm::clamp(this->velocity.y, -10.0f, 3.0f);
-  /*if (world.collide(gameObject)) {
-    //    std::cout << "collide" << std::endl;
-    this->velocity.x = (-this->velocity.x) * 0.01f;
-    // this->velocity.x = 0.0f;
-    // gameObject.transform.position = backupPosition;  // Rollback position
-  } */
+  if (world.collide(gameObject)) {
+    this->velocity.x = 0.0f;  // TODO: find at better way
+  }
 }
 
 InputComponent::InputComponent(void){};
