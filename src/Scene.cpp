@@ -11,7 +11,7 @@ Floor floor_setup1 = {{
                           1, 1, 1, 1, 0, 1, 1, 1, 1,  //
                           1, 1, 1, 1, 0, 1, 1, 1, 1   //
                       },
-                      {{0.0f, 0.0f, 3.0f}, {0.0f, 0.0f, 7.0f}}};
+                      {{4.0f, 0.0f, 3.0f}, {4.0f, 0.0f, 7.0f}}};
 
 Floor floor_setup2 = {{
                           1, 1, 1, 1, 0, 1, 1, 1, 1,  //
@@ -24,7 +24,7 @@ Floor floor_setup2 = {{
                           1, 1, 1, 1, 0, 1, 1, 1, 1,  //
                           1, 1, 1, 1, 0, 1, 1, 1, 1   //
                       },
-                      {{0.0f, 0.0f, 3.0f}, {0.0f, 0.0f, 7.0f}}};
+                      {{-4.0f, 0.0f, 3.0f}, {-4.0f, 0.0f, 7.0f}}};
 
 Floor floor_setup3 = {{
                           1, 1, 1, 1, 0, 1, 1, 1, 1,  //
@@ -37,7 +37,7 @@ Floor floor_setup3 = {{
                           1, 1, 1, 1, 0, 1, 1, 1, 1,  //
                           1, 1, 1, 1, 0, 1, 1, 1, 1   //
                       },
-                      {{0.0f, 0.0f, 3.0f}, {0.0f, 0.0f, 7.0f}}};
+                      {{-4.0f, 0.0f, 3.0f}, {-4.0f, 0.0f, 7.0f}}};
 
 Scene::Scene(void) {}
 
@@ -51,15 +51,24 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer, VAO* cube)
   Texture* tex_wall_white = new Texture("textures/white_wall.png");
   Texture* tex_wall_wood = new Texture("textures/wood_tex.png");
 
+  floor_setups.push_back(floor_setup1);
+  floor_setups.push_back(floor_setup2);
+  floor_setups.push_back(floor_setup3);
+
   this->floor_textures.push_back(tex_ground);
   this->wall_textures.push_back(tex_wall_white);
   this->wall_textures.push_back(tex_wall_wood);
 
   this->vao_cube = cube;
 
+  GameObject* obstacle =
+      new GameObject(shader.id, vao_cube, nullptr, nullptr, nullptr, nullptr);
+  floor_setups[0].obstacles_pool.push_back(obstacle);
+
   GameObject* player =
-      new GameObject(shader.id, nullptr, nullptr, new InputComponent(),
+      new GameObject(shader.id, vao_cube, nullptr, new InputComponent(),
                      new PhysicsComponent(), nullptr);
+  player->transform.scale = glm::vec3(0.3f, 0.3f, 0.3f);
   player->aabb_min = glm::vec3(-0.2f, 0.1f, -0.2f);
   player->aabb_max = glm::vec3(0.2f, 0.5f, 0.2f);
   player->is_collider = true;
@@ -80,10 +89,10 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer, VAO* cube)
   floor3->transform.position = glm::vec3(-4.0f, 0.5f, 18.0f);
   floor4->transform.position = glm::vec3(-4.0f, 0.5f, 27.0f);
 
-  populateFloor(floor1, floor_setup1);
-  populateFloor(floor2, floor_setup2);
-  populateFloor(floor3, floor_setup3);
-  populateFloor(floor4, floor_setup1);
+  populateFloor(floor1, floor_setups[0]);
+  populateFloor(floor2, floor_setups[1]);
+  populateFloor(floor3, floor_setups[2]);
+  populateFloor(floor4, floor_setups[0]);
 
   world.entities.push_back(floor1);
   world.entities.push_back(floor2);
@@ -158,7 +167,11 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
   }
   world.update(inputHandler, deltaTime);
 
-  _camera->pos = _player->transform.position;
+  if (!this->_player->physicsComponent->is_alive) {
+    this->_paused = true;
+  }
+
+  _camera->pos = _player->transform.position + glm::vec3(0.0f, 0.0f, -1.0f);
   _camera->pos.y += 0.3f;
 
   _camera->update();
@@ -237,13 +250,19 @@ void Scene::populateFloor(GameObject* floor_ptr, const Floor& setup) {
     if (setup.obstacles_pos.size() > 0) {
       std::uniform_int_distribution<int> dist_pos(
           0, setup.obstacles_pos.size() - 1);
-      glm::vec3 obstacle_pos = setup.obstacles_pos[dist_pos(mt)];
+      int rand_pos = dist_pos(mt);
+      std::cout << "rand_pos: " << rand_pos << std::endl;
+
+      glm::vec3 obstacle_pos = setup.obstacles_pos[rand_pos];
+
       if (setup.obstacles_pool.size() > 0) {
+        std::cout << "setup.obstacles_pool " << std::endl;
         std::uniform_int_distribution<int> dist_obs(
             0, setup.obstacles_pool.size() - 1);
         GameObject* obstacle = setup.obstacles_pool[dist_obs(mt)];
         GameObject* newObstacle = new GameObject(*obstacle);
         newObstacle->parent = floor_ptr;
+        newObstacle->transform.position = obstacle_pos;
         world.entities.push_back(newObstacle);
       }
     }
