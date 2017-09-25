@@ -27,7 +27,6 @@ class Scene {
   World world;
   VAO* vao_cube;
   GameObject* cubeModel;
-  void init();
   void update(InputHandler& inputHandler, float deltaTime);
   void draw();
   void populateFloor(GameObject* floor_ptr, const Floor& setup);

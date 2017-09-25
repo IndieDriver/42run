@@ -35,7 +35,6 @@ int main() {
   VAO *vao_cube = new VAO(cube_vertices, cube_elements);
   Renderer renderer(env.width, env.height);
   Scene scene(shader, camera, &renderer, vao_cube);
-  scene.init();
   while (!glfwWindowShouldClose(env.window)) {
     env.updateFpsCounter();
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
