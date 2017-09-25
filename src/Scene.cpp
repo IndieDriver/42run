@@ -53,7 +53,6 @@ void Scene::init() {
       new GameObject(shader, nullptr, nullptr, nullptr, nullptr, nullptr);
 
   floor1->transform.position = glm::vec3(-4.0f, 0.5f, 0.0f);
-  print_vec3(floor1->transform.position);
   floor2->transform.position = glm::vec3(-4.0f, 0.5f, 9.0f);
   floor3->transform.position = glm::vec3(-4.0f, 0.5f, 18.0f);
   floor4->transform.position = glm::vec3(-4.0f, 0.5f, 27.0f);
@@ -107,7 +106,6 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
     this->floors.pop_front();
 
     glm::vec3 floorPos = this->floors.back()->transform.position;
-    print_vec3(floorPos);
     floorPos.z += 9.0f;
     // TODO: rand floor
     GameObject* newFloor =

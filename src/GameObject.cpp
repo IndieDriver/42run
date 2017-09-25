@@ -139,8 +139,15 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
   gameObject.transform.position.y =
       glm::clamp(gameObject.transform.position.y, 0.0f, 1.0f);
   this->velocity.y = glm::clamp(this->velocity.y, -10.0f, 3.0f);
+  gameObject.transform.position.x =
+      glm::clamp(gameObject.transform.position.x, -0.29f, 0.29f);
+  if (fabs(gameObject.transform.position.x) == 0.29f) {
+    // Lateral wall was hit, nullify lateral velocity
+    velocity.x = 0.0f;
+  }
   if (world.collide(gameObject)) {
-    this->velocity.x = 0.0f;  // TODO: find at better way
+    // end game ???
+    // this->velocity.x = 0.0f;  // TODO: find at better way
   }
 }
 
