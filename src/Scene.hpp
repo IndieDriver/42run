@@ -26,9 +26,9 @@ class Scene {
   std::vector<Texture*> roof_textures;
   World world;
   VAO* vao_cube;
-  GameObject* cubeModel;
   void update(InputHandler& inputHandler, float deltaTime);
   void draw();
+  void drawPauseUI();
   void populateFloor(GameObject* floor_ptr, const Floor& setup);
 
   GLuint shader;
@@ -40,4 +40,5 @@ class Scene {
   Renderer* _renderer;
   GameObject* _player;
   float _meter_counter;
+  bool _paused;
 };

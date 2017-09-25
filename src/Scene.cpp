@@ -45,7 +45,8 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer, VAO* cube)
     : shader(shader.id),
       _camera(camera),
       _renderer(renderer),
-      _meter_counter(-1) {
+      _meter_counter(-1),
+      _paused(false) {
   Texture* tex_ground = new Texture("textures/floor_black.png");
   Texture* tex_wall_white = new Texture("textures/white_wall.png");
   Texture* tex_wall_wood = new Texture("textures/wood_tex.png");
@@ -114,11 +115,19 @@ Scene::~Scene(void) {
 
 Scene& Scene::operator=(Scene const& rhs) {
   if (this != &rhs) {
+    this->world = rhs.world;
+    this->vao_cube = rhs.vao_cube;
+    this->_camera = rhs._camera;
+    this->_renderer = rhs._renderer;
+    this->_player = rhs._player;
+    this->_meter_counter = rhs._meter_counter;
+    this->_paused = rhs._paused;
   }
   return (*this);
 }
 
 void Scene::update(InputHandler& inputHandler, float deltaTime) {
+  if (this->_paused) return;
   if (this->floors.size() > 0 && this->floors.front()->transform.position.z -
                                          _player->transform.position.z <
                                      -9.0f) {
@@ -165,7 +174,10 @@ void Scene::draw() {
   }
   this->_renderer->draw();
   this->_renderer->flush();
-  drawUI();
+  if (this->_paused) {
+    drawPauseUI();
+  }
+  // drawUI();
 }
 
 void Scene::drawUI() {
@@ -173,6 +185,13 @@ void Scene::drawUI() {
       this->_renderer->getScreenWidth() - 100.0f,
       this->_renderer->getScreenHeight() - 50.0f, 1.0f,
       std::to_string(static_cast<int>(this->_meter_counter)),
+      glm::vec3(0.0f, 0.0f, 0.0f));
+}
+
+void Scene::drawPauseUI() {
+  this->_renderer->renderText(
+      (this->_renderer->getScreenWidth() / 2.0f) - 75.0f,
+      this->_renderer->getScreenHeight() / 2.0f, 1.0f, "Pause",
       glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
