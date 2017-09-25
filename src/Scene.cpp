@@ -1,28 +1,43 @@
 #include "Scene.hpp"
 
-const std::array<int, 81> setup_floor1 = {
-    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-    1, 1, 1, 1, 0, 1, 1, 1, 1   //
-};
+Floor floor_setup1 = {{
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1   //
+                      },
+                      {{0.0f, 0.0f, 3.0f}, {0.0f, 0.0f, 7.0f}}};
 
-const std::array<int, 81> setup_floor2 = {
-    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-    1, 1, 1, 0, 0, 0, 1, 1, 1,  //
-    1, 1, 1, 0, 0, 0, 1, 1, 1,  //
-    1, 1, 1, 0, 0, 0, 1, 1, 1,  //
-    1, 1, 1, 0, 0, 0, 1, 1, 1,  //
-    1, 1, 1, 0, 0, 0, 1, 1, 1,  //
-    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-    1, 1, 1, 1, 0, 1, 1, 1, 1   //
-};
+Floor floor_setup2 = {{
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 0, 0, 0, 1, 1, 1,  //
+                          1, 1, 1, 0, 0, 0, 1, 1, 1,  //
+                          1, 1, 1, 0, 0, 0, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1   //
+                      },
+                      {{0.0f, 0.0f, 3.0f}, {0.0f, 0.0f, 7.0f}}};
+
+Floor floor_setup3 = {{
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 2, 0, 2, 1, 1, 1,  //
+                          1, 1, 1, 2, 0, 2, 1, 1, 1,  //
+                          1, 1, 1, 2, 0, 2, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+                          1, 1, 1, 1, 0, 1, 1, 1, 1   //
+                      },
+                      {{0.0f, 0.0f, 3.0f}, {0.0f, 0.0f, 7.0f}}};
 
 Scene::Scene(void) {}
 
@@ -31,6 +46,14 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer, VAO* cube)
       _camera(camera),
       _renderer(renderer),
       _meter_counter(-1) {
+  Texture* tex_ground = new Texture("textures/floor_black.png");
+  Texture* tex_wall_white = new Texture("textures/white_wall.png");
+  Texture* tex_wall_wood = new Texture("textures/wood_tex.png");
+
+  this->floor_textures.push_back(tex_ground);
+  this->wall_textures.push_back(tex_wall_white);
+  this->wall_textures.push_back(tex_wall_wood);
+
   this->vao_cube = cube;
   GameObject* player =
       new GameObject(shader.id, nullptr, nullptr, new InputComponent(),
@@ -40,6 +63,29 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer, VAO* cube)
   player->is_collider = true;
   this->_player = player;
   world.entities.push_back(player);
+}
+
+Scene::Scene(Scene const& src) { *this = src; }
+
+Scene::~Scene(void) {
+  for (auto entity : world.entities) {
+    delete entity;
+  }
+  for (auto tex : floor_textures) {
+    delete tex;
+  }
+  for (auto tex : wall_textures) {
+    delete tex;
+  }
+  for (auto tex : roof_textures) {
+    delete tex;
+  }
+}
+
+Scene& Scene::operator=(Scene const& rhs) {
+  if (this != &rhs) {
+  }
+  return (*this);
 }
 
 void Scene::init() {
@@ -57,10 +103,10 @@ void Scene::init() {
   floor3->transform.position = glm::vec3(-4.0f, 0.5f, 18.0f);
   floor4->transform.position = glm::vec3(-4.0f, 0.5f, 27.0f);
 
-  populateFloor(floor1, setup_floor1);
-  populateFloor(floor2, setup_floor2);
-  populateFloor(floor3, setup_floor1);
-  populateFloor(floor4, setup_floor1);
+  populateFloor(floor1, floor_setup1);
+  populateFloor(floor2, floor_setup2);
+  populateFloor(floor3, floor_setup3);
+  populateFloor(floor4, floor_setup1);
 
   world.entities.push_back(floor1);
   world.entities.push_back(floor2);
@@ -71,20 +117,6 @@ void Scene::init() {
   floors.push_back(floor2);
   floors.push_back(floor3);
   floors.push_back(floor4);
-}
-
-Scene::Scene(Scene const& src) { *this = src; }
-
-Scene::~Scene(void) {
-  for (auto entity : world.entities) {
-    delete entity;
-  }
-}
-
-Scene& Scene::operator=(Scene const& rhs) {
-  if (this != &rhs) {
-  }
-  return (*this);
 }
 
 void Scene::update(InputHandler& inputHandler, float deltaTime) {
@@ -110,7 +142,7 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
     // TODO: rand floor
     GameObject* newFloor =
         new GameObject(shader, nullptr, nullptr, nullptr, nullptr, nullptr);
-    populateFloor(newFloor, setup_floor1);
+    populateFloor(newFloor, floor_setup1);
     newFloor->transform.position = floorPos;
 
     this->world.entities.push_back(newFloor);
@@ -145,10 +177,10 @@ void Scene::drawUI() {
       glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
-void Scene::populateFloor(GameObject* floor_ptr, std::array<int, 81> setup) {
+void Scene::populateFloor(GameObject* floor_ptr, const Floor& setup) {
   for (int i = 0; i < 9; i++) {
     for (int j = 0; j < 9; j++) {
-      int block_id = setup[i * 9 + j];
+      int block_id = setup.setup[i * 9 + j];
       if (block_id == 0) {
         GameObject* mfloor =
             new GameObject(shader, vao_cube, this->floor_textures[0], nullptr,
@@ -159,9 +191,13 @@ void Scene::populateFloor(GameObject* floor_ptr, std::array<int, 81> setup) {
         world.entities.push_back(mfloor);
         world.entities.push_back(mroof);
       } else if (block_id != 0) {
+        Texture* texture = nullptr;
+        if (block_id - 1 < this->wall_textures.size()) {
+          texture = this->wall_textures[block_id - 1];
+        }
         GameObject* mwall =
-            new GameObject(shader, vao_cube, this->wall_textures[0], nullptr,
-                           nullptr, floor_ptr, glm::vec3(j, 0.0f, i));
+            new GameObject(shader, vao_cube, texture, nullptr, nullptr,
+                           floor_ptr, glm::vec3(j, 0.0f, i));
         world.entities.push_back(mwall);
       }
     }

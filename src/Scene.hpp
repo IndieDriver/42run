@@ -7,6 +7,13 @@
 #include "Shader.hpp"
 #include "run.hpp"
 
+struct Floor {
+  std::array<int, 81> setup;
+  std::vector<glm::vec3> obstacles_pos;
+  std::vector<GameObject*> obstacles_pool;
+  std::vector<GameObject*> entities;
+};
+
 class Scene {
  public:
   Scene(Shader shader, Camera* camera, Renderer* renderer, VAO* cube);
@@ -23,7 +30,7 @@ class Scene {
   void init();
   void update(InputHandler& inputHandler, float deltaTime);
   void draw();
-  void populateFloor(GameObject* floor_ptr, std::array<int, 81> setup);
+  void populateFloor(GameObject* floor_ptr, const Floor& setup);
 
   GLuint shader;
 

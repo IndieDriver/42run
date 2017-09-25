@@ -32,13 +32,9 @@ int main() {
   Camera *camera =
       new Camera(glm::vec3(0.0f, 0.3f, -1.0f), glm::vec3(0.0f, 0.3f, 0.0f),
                  env.width, env.height);
-  Texture *tex_ground = new Texture("textures/0.png");
-  Texture *tex_wall = new Texture("textures/grey_wall.jpg");
   VAO *vao_cube = new VAO(cube_vertices, cube_elements);
   Renderer renderer(env.width, env.height);
   Scene scene(shader, camera, &renderer, vao_cube);
-  scene.floor_textures.push_back(tex_ground);
-  scene.wall_textures.push_back(tex_wall);
   scene.init();
   while (!glfwWindowShouldClose(env.window)) {
     env.updateFpsCounter();
@@ -55,7 +51,5 @@ int main() {
   }
   glfwTerminate();
   delete camera;
-  delete tex_ground;
-  delete tex_wall;
   delete vao_cube;
 }
