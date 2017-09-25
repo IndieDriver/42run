@@ -32,6 +32,7 @@ set(SOURCE_FILES
         src/GameObject.cpp
         src/Scene.cpp
         src/Renderer.cpp
+        src/Model.cpp
         third-party/glad/src/glad.c
         )
 
