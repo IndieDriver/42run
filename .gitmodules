@@ -8,3 +8,6 @@
 	path = third-party/freetype
 	url = git://git.sv.nongnu.org/freetype/freetype2.git
 	ignore = untracked
+[submodule "third-party/tinyobjloader"]
+	path = third-party/tinyobjloader
+	url = https://github.com/syoyo/tinyobjloader.git

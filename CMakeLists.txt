@@ -19,6 +19,8 @@ include_directories(third-party/glad/include)
 include_directories(third-party/glm)
 include_directories(third-party/stb)
 include_directories(${OPENGL_INCLUDE_DIR})
+include_directories(third-party/tinyobjloader)
+
 
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
