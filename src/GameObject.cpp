@@ -42,6 +42,7 @@ GameObject::GameObject(GLuint shader, VAO* vao, Texture* texture,
                        PhysicsComponent* physicsComponent, GameObject* parent,
                        glm::vec3 pos, glm::vec3 rot, glm::vec3 sca)
     : parent(parent),
+      is_collider(false),
       inputComponent(inputComponent),
       physicsComponent(physicsComponent) {
   this->transform.position = pos;
@@ -54,11 +55,9 @@ GameObject::GameObject(GLuint shader, VAO* vao, Texture* texture,
   if (vao != nullptr) {
     this->aabb_min = vao->aabb_min;
     this->aabb_max = vao->aabb_max;
-    this->is_collider = true;
   } else {
     this->aabb_min = glm::vec3(0.0f, 0.0f, 0.0f);
     this->aabb_max = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->is_collider = false;
   }
 }
 
@@ -125,11 +124,13 @@ PhysicsComponent& PhysicsComponent::operator=(PhysicsComponent const& rhs) {
   if (this != &rhs) {
     this->velocity = rhs.velocity;
     this->speed = rhs.speed;
+    this->has_collide = rhs.has_collide;
   }
   return (*this);
 }
 
 void PhysicsComponent::update(GameObject& gameObject, World& world) {
+  has_collide = false;  // Reset every frame
   glm::vec3 backupPosition = gameObject.transform.position;
   this->speed += 0.1f * world.deltaTime;
   gameObject.transform.position.z += log(this->speed) * 2.0f * world.deltaTime;
@@ -146,6 +147,7 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
     velocity.x = 0.0f;
   }
   if (world.collide(gameObject)) {
+    this->has_collide = true;
     std::cout << "collide" << std::endl;
     // end game ???
   }

@@ -78,12 +78,12 @@ class GameObject {
   glm::vec3 aabb_min;  // model space
   glm::vec3 aabb_max;  // model space
   bool is_collider;
+  InputComponent* inputComponent;
+  PhysicsComponent* physicsComponent;
 
  private:
   GameObject(void);
   RenderAttrib _renderAttrib;
-  InputComponent* inputComponent;
-  PhysicsComponent* physicsComponent;
 };
 
 class InputComponent {
@@ -106,4 +106,5 @@ class PhysicsComponent {
 
   glm::vec3 velocity = {0.0f, 0.0f, 0.0f};
   float speed;
+  bool has_collide;  // Set as true at the end of update
 };

@@ -167,16 +167,24 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
 
     glm::vec3 floorPos = this->floors.back()->transform.position;
     floorPos.z += 9.0f;
-    // TODO: rand floor
     GameObject* newFloor =
         new GameObject(shader_id, nullptr, nullptr, nullptr, nullptr, nullptr);
-    populateFloor(newFloor, floor_pool[0]);
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_int_distribution<int> dist(0, floor_pool.size() - 1);
+    int rand_nb = dist(mt);
+
+    populateFloor(newFloor, floor_pool[dist(mt)]);
     newFloor->transform.position = floorPos;
 
     this->world.entities.push_back(newFloor);
     this->floors.push_back(newFloor);
   }
   world.update(inputHandler, deltaTime);
+
+  if (_player->physicsComponent->has_collide) {
+    this->_paused = true;
+  }
 
   _camera->pos = _player->transform.position;
   _camera->pos.y += 0.3f;
