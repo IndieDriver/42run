@@ -31,7 +31,8 @@ class Scene {
   void drawPauseUI();
   void populateFloor(GameObject* floor_ptr, const Floor& setup);
 
-  GLuint shader;
+  GLuint shader_id;
+  std::vector<Floor> floor_pool;
 
  private:
   Scene(void);

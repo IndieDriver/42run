@@ -147,7 +147,6 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
   }
   if (world.collide(gameObject)) {
     // end game ???
-    // this->velocity.x = 0.0f;  // TODO: find at better way
   }
 }
 
