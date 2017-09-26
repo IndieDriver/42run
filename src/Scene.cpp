@@ -115,6 +115,10 @@ Scene::~Scene(void) {
 
 Scene& Scene::operator=(Scene const& rhs) {
   if (this != &rhs) {
+    this->floors = rhs.floors;
+    this->floor_textures = rhs.floor_textures;
+    this->wall_textures = rhs.wall_textures;
+    this->roof_textures = rhs.roof_textures;
     this->world = rhs.world;
     this->vao_cube = rhs.vao_cube;
     this->_camera = rhs._camera;
@@ -130,7 +134,7 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
   if (this->_paused) return;
   if (this->floors.size() > 0 && this->floors.front()->transform.position.z -
                                          _player->transform.position.z <
-                                     -9.0f) {
+                                     -12.0f) {
     GameObject* oldFloor = this->floors.front();
     world.entities.erase(
         std::remove_if(world.entities.begin(), world.entities.end(),
@@ -160,6 +164,7 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
 
   _camera->pos = _player->transform.position;
   _camera->pos.y += 0.3f;
+  _camera->pos.z -= 0.5f;
 
   _camera->update();
   _renderer->view = this->_camera->view;
@@ -177,7 +182,7 @@ void Scene::draw() {
   if (this->_paused) {
     drawPauseUI();
   }
-  // drawUI();
+  drawUI();
 }
 
 void Scene::drawUI() {

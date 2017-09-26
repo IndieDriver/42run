@@ -14,7 +14,7 @@ int main() {
   Camera *camera =
       new Camera(glm::vec3(0.0f, 0.3f, -1.0f), glm::vec3(0.0f, 0.3f, 0.0f),
                  env.width, env.height);
-  Model cube_model("obj/cube.obj");
+  Model cube_model("models/cube.obj");
   VAO *vao_cube = new VAO(cube_model.vertices, cube_model.indices);
   Renderer renderer(env.width, env.height);
   Scene scene(shader, camera, &renderer, vao_cube);
