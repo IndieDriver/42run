@@ -115,7 +115,7 @@ void GameObject::setTexture(Texture* texture) {
   this->_renderAttrib.texture = texture;
 }
 
-PhysicsComponent::PhysicsComponent(void) : speed(5.0f), is_alive(true){};
+PhysicsComponent::PhysicsComponent(void) : speed(5.0f){};
 
 PhysicsComponent::~PhysicsComponent(void){};
 
@@ -125,7 +125,6 @@ PhysicsComponent& PhysicsComponent::operator=(PhysicsComponent const& rhs) {
   if (this != &rhs) {
     this->velocity = rhs.velocity;
     this->speed = rhs.speed;
-    this->is_alive = rhs.is_alive;
   }
   return (*this);
 }
@@ -147,7 +146,6 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
     velocity.x = 0.0f;
   }
   if (world.collide(gameObject)) {
-    this->is_alive = false;
     // end game ???
     // this->velocity.x = 0.0f;  // TODO: find at better way
   }
