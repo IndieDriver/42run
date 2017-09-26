@@ -11,13 +11,11 @@ int main() {
   Env env(1280, 720);
   Shader shader("shaders/run.vert", "shaders/run.frag");
 
-  Camera *camera =
-      new Camera(glm::vec3(0.0f, 0.3f, -1.0f), glm::vec3(0.0f, 0.3f, 0.0f),
-                 env.width, env.height);
-  Model cube_model("models/cube.obj");
-  VAO *vao_cube = new VAO(cube_model.vertices, cube_model.indices);
+  Camera camera = Camera(glm::vec3(0.0f, 0.3f, -1.0f),
+                         glm::vec3(0.0f, 0.3f, 0.0f), env.width, env.height);
+
   Renderer renderer(env.width, env.height);
-  Scene scene(shader, camera, &renderer, vao_cube);
+  Scene scene(shader, &camera, &renderer);
   while (!glfwWindowShouldClose(env.window)) {
     env.updateFpsCounter();
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -32,6 +30,4 @@ int main() {
     }
   }
   glfwTerminate();
-  delete camera;
-  delete vao_cube;
 }

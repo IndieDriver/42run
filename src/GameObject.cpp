@@ -146,6 +146,7 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
     velocity.x = 0.0f;
   }
   if (world.collide(gameObject)) {
+    std::cout << "collide" << std::endl;
     // end game ???
   }
 }

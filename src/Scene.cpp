@@ -11,7 +11,7 @@ Floor floor_setup1 = {{
                           1, 1, 1, 1, 0, 1, 1, 1, 1,  //
                           1, 1, 1, 1, 0, 1, 1, 1, 1   //
                       },
-                      {{0.0f, 0.0f, 3.0f}, {0.0f, 0.0f, 7.0f}}};
+                      {{4.0f, 0.0f, 3.0f}, {4.0f, 0.0f, 7.0f}}};
 
 Floor floor_setup2 = {{
                           1, 1, 1, 1, 0, 1, 1, 1, 1,  //
@@ -24,7 +24,7 @@ Floor floor_setup2 = {{
                           1, 1, 1, 1, 0, 1, 1, 1, 1,  //
                           1, 1, 1, 1, 0, 1, 1, 1, 1   //
                       },
-                      {{0.0f, 0.0f, 3.0f}, {0.0f, 0.0f, 7.0f}}};
+                      {{4.0f, 0.0f, 3.0f}, {4.0f, 0.0f, 7.0f}}};
 
 Floor floor_setup3 = {{
                           1, 1, 1, 1, 0, 1, 1, 1, 1,  //
@@ -37,11 +37,11 @@ Floor floor_setup3 = {{
                           1, 1, 1, 1, 0, 1, 1, 1, 1,  //
                           1, 1, 1, 1, 0, 1, 1, 1, 1   //
                       },
-                      {{0.0f, 0.0f, 3.0f}, {0.0f, 0.0f, 7.0f}}};
+                      {{4.0f, 0.0f, 3.0f}, {4.0f, 0.0f, 7.0f}}};
 
 Scene::Scene(void) {}
 
-Scene::Scene(Shader shader, Camera* camera, Renderer* renderer, VAO* cube)
+Scene::Scene(Shader shader, Camera* camera, Renderer* renderer)
     : shader_id(shader.id),
       _camera(camera),
       _renderer(renderer),
@@ -51,7 +51,6 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer, VAO* cube)
   this->floor_pool.push_back(floor_setup2);
   this->floor_pool.push_back(floor_setup3);
 
-
   Texture* tex_ground = new Texture("textures/floor_black.png");
   Texture* tex_wall_white = new Texture("textures/white_wall.png");
   Texture* tex_wall_wood = new Texture("textures/wood_tex.png");
@@ -60,7 +59,14 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer, VAO* cube)
   this->wall_textures.push_back(tex_wall_white);
   this->wall_textures.push_back(tex_wall_wood);
 
-  this->vao_cube = cube;
+  Model cube_model("models/cube.obj");
+  this->vao_cube = new VAO(cube_model.vertices, cube_model.indices);
+
+  Model teapot_model("models/teapot.obj");
+  VAO* vao_teapot = new VAO(teapot_model.vertices, teapot_model.indices);
+  GameObject* go_teapot = new GameObject(
+      shader.id, vao_teapot, this->wall_textures[0], nullptr, nullptr, nullptr);
+  obstacle_pool.push_back(go_teapot);
 
   GameObject* player =
       new GameObject(shader_id, nullptr, nullptr, new InputComponent(),
@@ -116,6 +122,10 @@ Scene::~Scene(void) {
   for (auto tex : roof_textures) {
     delete tex;
   }
+  for (auto obs : obstacle_pool) {
+    delete obs;
+  }
+  delete vao_cube;
 }
 
 Scene& Scene::operator=(Scene const& rhs) {
@@ -160,7 +170,7 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
     // TODO: rand floor
     GameObject* newFloor =
         new GameObject(shader_id, nullptr, nullptr, nullptr, nullptr, nullptr);
-    populateFloor(newFloor, floor_pool[2]);
+    populateFloor(newFloor, floor_pool[0]);
     newFloor->transform.position = floorPos;
 
     this->world.entities.push_back(newFloor);
@@ -212,11 +222,11 @@ void Scene::populateFloor(GameObject* floor_ptr, const Floor& setup) {
       int block_id = setup.setup[i * 9 + j];
       if (block_id == 0) {
         GameObject* mfloor =
-            new GameObject(shader_id, vao_cube, this->floor_textures[0], nullptr,
-                           nullptr, floor_ptr, glm::vec3(j, -1.0f, i));
+            new GameObject(shader_id, vao_cube, this->floor_textures[0],
+                           nullptr, nullptr, floor_ptr, glm::vec3(j, -1.0f, i));
         GameObject* mroof =
-            new GameObject(shader_id, vao_cube, this->floor_textures[0], nullptr,
-                           nullptr, floor_ptr, glm::vec3(j, 1.0f, i));
+            new GameObject(shader_id, vao_cube, this->floor_textures[0],
+                           nullptr, nullptr, floor_ptr, glm::vec3(j, 1.0f, i));
         world.entities.push_back(mfloor);
         world.entities.push_back(mroof);
       } else if (block_id != 0) {
@@ -249,12 +259,21 @@ void Scene::populateFloor(GameObject* floor_ptr, const Floor& setup) {
       std::uniform_int_distribution<int> dist_pos(
           0, setup.obstacles_pos.size() - 1);
       glm::vec3 obstacle_pos = setup.obstacles_pos[dist_pos(mt)];
-      if (setup.obstacles_pool.size() > 0) {
-        std::uniform_int_distribution<int> dist_obs(
-            0, setup.obstacles_pool.size() - 1);
-        GameObject* obstacle = setup.obstacles_pool[dist_obs(mt)];
-        GameObject* newObstacle = new GameObject(*obstacle);
+      obstacle_pos.y -= 0.4f;
+      if (obstacle_pool.size() > 0) {
+        std::cout << "new obstacles at: ";
+        print_vec3(obstacle_pos);
+        std::uniform_int_distribution<int> dist_obs(0,
+                                                    obstacle_pool.size() - 1);
+        GameObject* obstacle = obstacle_pool[dist_obs(mt)];
+        /*GameObject* newObstacle = new GameObject(*obstacle);
         newObstacle->parent = floor_ptr;
+        newObstacle->transform.position = obstacle_pos; */
+        GameObject* newObstacle = new GameObject(
+            shader_id, vao_cube, this->wall_textures[1], nullptr, nullptr,
+            floor_ptr, obstacle_pos, glm::vec3(0.0f, 0.0f, 0.0f),
+            glm::vec3(0.1f, 0.1f, 0.1f));
+        newObstacle->is_collider = true;
         world.entities.push_back(newObstacle);
       }
     }
