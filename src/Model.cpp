@@ -19,6 +19,7 @@ Model::Model(const std::string filename) {
 
   if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, filename.c_str(),
                         basedir.c_str())) {
+    std::cerr << "Cannot load obj: " << filename.c_str() << std::endl;
     return;
   }
   if (materials.empty()) {

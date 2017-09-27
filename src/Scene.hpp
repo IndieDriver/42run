@@ -10,7 +10,6 @@
 
 struct Floor {
   std::array<int, 81> setup;
-  std::vector<glm::vec3> obstacles_pos;
   std::vector<GameObject*> entities;
 };
 

@@ -21,9 +21,10 @@ struct VAO {
   GLsizei indices_size;
   glm::vec3 aabb_min;
   glm::vec3 aabb_max;
+  std::vector<Vertex> vertices;
 
  private:
-  void calc_aabb(std::vector<Vertex> vertices);
+  void calc_aabb(std::vector<Vertex> vertices, glm::mat4 model_matrix);
 };
 
 struct RenderAttrib {

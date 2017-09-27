@@ -186,7 +186,7 @@ void TextRenderer::renderText(float pos_x, float pos_y, float scale,
   glDisable(GL_BLEND);
 }
 
-VAO::VAO(std::vector<Vertex> vertices) {
+VAO::VAO(std::vector<Vertex> vertices) : vertices(vertices) {
   GLuint vbo;
   this->vao = -1;
   this->ebo = -1;
@@ -208,10 +208,11 @@ VAO::VAO(std::vector<Vertex> vertices) {
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
 
-  calc_aabb(vertices);
+  calc_aabb(vertices, glm::mat4(1.0f));
 }
 
-VAO::VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices) {
+VAO::VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices)
+    : vertices(vertices) {
   GLuint vbo;
   this->vertices_size = vertices.size();
   this->indices_size = indices.size();
@@ -237,17 +238,18 @@ VAO::VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices) {
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
 
-  calc_aabb(vertices);
+  calc_aabb(vertices, glm::mat4(1.0f));
 }
 
-void VAO::calc_aabb(std::vector<Vertex> vertices) {
+void VAO::calc_aabb(std::vector<Vertex> vertices, glm::mat4 model_matrix) {
   for (const auto &vertex : vertices) {
-    if (vertex.position.x < aabb_min.x) aabb_min.x = vertex.position.x;
-    if (vertex.position.x > aabb_max.x) aabb_max.x = vertex.position.x;
-    if (vertex.position.y < aabb_min.y) aabb_min.y = vertex.position.y;
-    if (vertex.position.y > aabb_max.y) aabb_max.y = vertex.position.y;
-    if (vertex.position.z < aabb_min.z) aabb_min.z = vertex.position.z;
-    if (vertex.position.z > aabb_max.z) aabb_max.z = vertex.position.z;
+    glm::vec3 position = model_matrix * glm::vec4(vertex.position, 1.0f);
+    if (position.x < aabb_min.x) aabb_min.x = position.x;
+    if (position.x > aabb_max.x) aabb_max.x = position.x;
+    if (position.y < aabb_min.y) aabb_min.y = position.y;
+    if (position.y > aabb_max.y) aabb_max.y = position.y;
+    if (position.z < aabb_min.z) aabb_min.z = position.z;
+    if (position.z > aabb_max.z) aabb_max.z = position.z;
   }
 }
 

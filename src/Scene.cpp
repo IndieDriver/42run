@@ -1,43 +1,42 @@
 #include "Scene.hpp"
 
 Floor floor_setup1 = {{
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1   //
-                      },
-                      {{4.0f, 0.0f, 3.0f}, {4.0f, 0.0f, 7.0f}}};
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1   //
+}};
 
 Floor floor_setup2 = {{
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 0, 0, 0, 1, 1, 1,  //
-                          1, 1, 1, 0, 0, 0, 1, 1, 1,  //
-                          1, 1, 1, 0, 0, 0, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1   //
-                      },
-                      {{4.0f, 0.0f, 3.0f}, {4.0f, 0.0f, 7.0f}}};
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 0, 0, 0, 1, 1, 1,  //
+    1, 1, 1, 0, 0, 0, 1, 1, 1,  //
+    1, 1, 1, 0, 0, 0, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1   //
+}};
 
 Floor floor_setup3 = {{
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 2, 0, 2, 1, 1, 1,  //
-                          1, 1, 1, 2, 0, 2, 1, 1, 1,  //
-                          1, 1, 1, 2, 0, 2, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1,  //
-                          1, 1, 1, 1, 0, 1, 1, 1, 1   //
-                      },
-                      {{4.0f, 0.0f, 3.0f}, {4.0f, 0.0f, 7.0f}}};
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 2, 0, 2, 1, 1, 1,  //
+    1, 1, 1, 2, 0, 2, 1, 1, 1,  //
+    1, 1, 1, 2, 0, 2, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1,  //
+    1, 1, 1, 1, 0, 1, 1, 1, 1   //
+}};
+
+//{{4.0f, 0.0f, 3.0f}, {4.0f, 0.0f, 7.0f}}};
 
 Scene::Scene(void) {}
 
@@ -62,17 +61,21 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer)
   Model cube_model("models/cube.obj");
   this->vao_cube = new VAO(cube_model.vertices, cube_model.indices);
 
-  Model teapot_model("models/teapot.obj");
-  VAO* vao_teapot = new VAO(teapot_model.vertices, teapot_model.indices);
-  GameObject* go_teapot = new GameObject(
-      shader.id, vao_teapot, this->wall_textures[0], nullptr, nullptr, nullptr);
-  obstacle_pool.push_back(go_teapot);
+  Model table_model("models/table.obj");
+  VAO* vao_table = new VAO(table_model.vertices, table_model.indices);
+  Texture* texture_table = new Texture("models/table.png");
+  GameObject* go_table = new GameObject(shader.id, vao_table, texture_table,
+                                        nullptr, nullptr, nullptr);
+  obstacle_pool.push_back(go_table);
 
   GameObject* player =
       new GameObject(shader_id, vao_cube, nullptr, new InputComponent(),
                      new PhysicsComponent(), nullptr);
   player->aabb_min = glm::vec3(-0.2f, 0.1f, -0.2f);
   player->aabb_max = glm::vec3(0.2f, 0.5f, 0.2f);
+  player->updateAABB();
+  print_vec3(player->aabb_min);
+  print_vec3(player->aabb_max);
   player->transform.scale = glm::vec3(0.1f, 0.1f, 0.1f);
   player->is_collider = true;
   this->_player = player;
@@ -258,50 +261,40 @@ void Scene::populateFloor(GameObject* floor_ptr, const Floor& setup) {
   // Populate floor with obstacle
   std::random_device rd;
   std::mt19937 mt(rd());
-  std::uniform_int_distribution<int> dist(0, 2);
-  int rand_nb = dist(mt);
-  std::cout << "rand_nb: " << rand_nb << std::endl;
-  if (rand_nb == 0) {
-    if (setup.obstacles_pos.size() > 0) {
-      std::uniform_int_distribution<int> dist_pos(
-          0, setup.obstacles_pos.size() - 1);
-      glm::vec3 obstacle_pos = setup.obstacles_pos[dist_pos(mt)];
-      obstacle_pos.y -= 0.4f;
+  for (int i = 0; i < 10; i++) {
+    std::uniform_int_distribution<int> dist(0, 2);
+    int rand_nb = dist(mt);
+    std::cout << "rand_nb: " << rand_nb << std::endl;
+    if (rand_nb == 0) {
+      glm::vec3 obstacle_pos = glm::vec3(4.0f, -0.5f, 0.0f);
+      std::uniform_int_distribution<int> dist_pos(0, 8);
+      obstacle_pos.z += static_cast<float>(dist_pos(mt));
       if (obstacle_pool.size() > 0) {
         std::uniform_int_distribution<int> dist_rail(0, 2);
-        int randRails = dist_rail(mt);
-        float randx;
-        switch (randRails) {
+        switch (dist_rail(mt)) {
           case 0:
-            randx = 0.25f;
+            obstacle_pos.x += 0.25f;
             break;
           case 1:
-            randx = 0.0f;
+            obstacle_pos.x += 0.0f;
             break;
           case 2:
-            randx = -0.25f;
+            obstacle_pos.x += -0.25f;
             break;
           default:
-            randx = 0.0f;
+            obstacle_pos.x += 0.0f;
             break;
         }
-        if (randRails == 0) {
-          randx = 0.25f;
-        }
-
-        obstacle_pos.x += randx;
         std::cout << "new obstacles at: ";
         print_vec3(obstacle_pos);
         std::uniform_int_distribution<int> dist_obs(0,
                                                     obstacle_pool.size() - 1);
         GameObject* obstacle = obstacle_pool[dist_obs(mt)];
-        /*GameObject* newObstacle = new GameObject(*obstacle);
+        GameObject* newObstacle = new GameObject(*obstacle);
         newObstacle->parent = floor_ptr;
-        newObstacle->transform.position = obstacle_pos; */
-        GameObject* newObstacle = new GameObject(
-            shader_id, vao_cube, this->wall_textures[1], nullptr, nullptr,
-            floor_ptr, obstacle_pos, glm::vec3(0.0f, 0.0f, 0.0f),
-            glm::vec3(0.1f, 0.1f, 0.1f));
+        newObstacle->transform.position = obstacle_pos;
+        newObstacle->transform.scale = glm::vec3(0.08f, 0.08f, 0.08f);
+        newObstacle->updateAABB();
         newObstacle->is_collider = true;
         world.entities.push_back(newObstacle);
       }
