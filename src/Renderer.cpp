@@ -25,7 +25,7 @@ void Renderer::addRenderAttrib(const RenderAttrib &renderAttrib) {
 
 void Renderer::draw() {
   std::sort(_renderAttribs.begin(), _renderAttribs.end());
-  //printRenderAttribs();
+  // printRenderAttribs();
   int shader_id = -1;
   int texture_id = -1;
   for (const auto &attrib : this->_renderAttribs) {
@@ -35,13 +35,14 @@ void Renderer::draw() {
     }
     if (shader_id > 0 && attrib.vao != nullptr) {
       if (attrib.texture != nullptr) {
-        if (attrib.texture->id != texture_id) {
+        if (attrib.texture->id != texture_id && attrib.texture->id > 0) {
           glActiveTexture(GL_TEXTURE0);
           glBindTexture(GL_TEXTURE_2D, attrib.texture->id);
           texture_id = attrib.texture->id;
         }
       } else {
         glBindTexture(GL_TEXTURE_2D, 0);
+        texture_id = -1;
       }
       glm::mat4 mvp = this->proj * this->view * attrib.transforms[0];
       glUniformMatrix4fv(glGetUniformLocation(attrib.shader, "MVP"), 1,

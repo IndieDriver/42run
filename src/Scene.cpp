@@ -69,10 +69,11 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer)
   obstacle_pool.push_back(go_teapot);
 
   GameObject* player =
-      new GameObject(shader_id, nullptr, nullptr, new InputComponent(),
+      new GameObject(shader_id, vao_cube, nullptr, new InputComponent(),
                      new PhysicsComponent(), nullptr);
   player->aabb_min = glm::vec3(-0.2f, 0.1f, -0.2f);
   player->aabb_max = glm::vec3(0.2f, 0.5f, 0.2f);
+  player->transform.scale = glm::vec3(0.1f, 0.1f, 0.1f);
   player->is_collider = true;
   this->_player = player;
   world.entities.push_back(player);
@@ -267,6 +268,28 @@ void Scene::populateFloor(GameObject* floor_ptr, const Floor& setup) {
       glm::vec3 obstacle_pos = setup.obstacles_pos[dist_pos(mt)];
       obstacle_pos.y -= 0.4f;
       if (obstacle_pool.size() > 0) {
+        std::uniform_int_distribution<int> dist_rail(0, 2);
+        int randRails = dist_rail(mt);
+        float randx;
+        switch (randRails) {
+          case 0:
+            randx = 0.25f;
+            break;
+          case 1:
+            randx = 0.0f;
+            break;
+          case 2:
+            randx = -0.25f;
+            break;
+          default:
+            randx = 0.0f;
+            break;
+        }
+        if (randRails == 0) {
+          randx = 0.25f;
+        }
+
+        obstacle_pos.x += randx;
         std::cout << "new obstacles at: ";
         print_vec3(obstacle_pos);
         std::uniform_int_distribution<int> dist_obs(0,
