@@ -25,7 +25,6 @@ class Camera {
   void update();
 
  private:
-  // Vec3 target;
   bool mouseMoved = false;
   float horAngle;
   float verAngle;

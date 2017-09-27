@@ -264,40 +264,36 @@ void Scene::populateFloor(GameObject* floor_ptr, const Floor& setup) {
   for (int i = 0; i < 10; i++) {
     std::uniform_int_distribution<int> dist(0, 2);
     int rand_nb = dist(mt);
-    std::cout << "rand_nb: " << rand_nb << std::endl;
     if (rand_nb == 0) {
-      glm::vec3 obstacle_pos = glm::vec3(4.0f, -0.5f, 0.0f);
-      std::uniform_int_distribution<int> dist_pos(0, 8);
-      obstacle_pos.z += static_cast<float>(dist_pos(mt));
-      if (obstacle_pool.size() > 0) {
-        std::uniform_int_distribution<int> dist_rail(0, 2);
-        switch (dist_rail(mt)) {
-          case 0:
-            obstacle_pos.x += 0.25f;
-            break;
-          case 1:
-            obstacle_pos.x += 0.0f;
-            break;
-          case 2:
-            obstacle_pos.x += -0.25f;
-            break;
-          default:
-            obstacle_pos.x += 0.0f;
-            break;
-        }
-        std::cout << "new obstacles at: ";
-        print_vec3(obstacle_pos);
-        std::uniform_int_distribution<int> dist_obs(0,
-                                                    obstacle_pool.size() - 1);
-        GameObject* obstacle = obstacle_pool[dist_obs(mt)];
-        GameObject* newObstacle = new GameObject(*obstacle);
-        newObstacle->parent = floor_ptr;
-        newObstacle->transform.position = obstacle_pos;
-        newObstacle->transform.scale = glm::vec3(0.08f, 0.08f, 0.08f);
-        newObstacle->updateAABB();
-        newObstacle->is_collider = true;
-        world.entities.push_back(newObstacle);
-      }
+      addObstacle(floor_ptr);
     }
+  }
+}
+
+void Scene::addObstacle(GameObject* parent) {
+  std::random_device rd;
+  std::mt19937 mt(rd());
+  std::uniform_int_distribution<int> dist_pos(0, 8);
+  glm::vec3 obstacle_pos =
+      glm::vec3(4.0f, -0.5f, static_cast<float>(dist_pos(mt)));
+  if (obstacle_pool.size() > 0) {
+    std::uniform_int_distribution<int> dist_rail(0, 2);
+    int rand_rail = dist_rail(mt);
+    if (rand_rail == 0) {  // Rail left
+      obstacle_pos.x += 0.25f;
+    } else if (rand_rail == 2) {  // Rail right
+      obstacle_pos.x -= 0.25f;
+    }
+    std::cout << "new obstacles at: ";
+    print_vec3(obstacle_pos);
+    std::uniform_int_distribution<int> dist_obs(0, obstacle_pool.size() - 1);
+    GameObject* obstacle = obstacle_pool[dist_obs(mt)];
+    GameObject* newObstacle = new GameObject(*obstacle);
+    newObstacle->parent = parent;
+    newObstacle->transform.position = obstacle_pos;
+    newObstacle->transform.scale = glm::vec3(0.08f, 0.08f, 0.08f);
+    newObstacle->updateAABB();
+    newObstacle->is_collider = true;
+    world.entities.push_back(newObstacle);
   }
 }
