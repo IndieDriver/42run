@@ -8,6 +8,8 @@ class GameObject;
 class PhysicsComponent;
 class InputComponent;
 
+enum class Rail { left, center, right };
+
 class World {
  public:
   std::vector<GameObject*> entities;
@@ -87,6 +89,8 @@ class GameObject {
 };
 
 class InputComponent {
+  // enum class Rail { left, center, right };
+
  public:
   InputComponent(void);
   InputComponent(InputComponent const& src);
@@ -94,6 +98,7 @@ class InputComponent {
   InputComponent& operator=(InputComponent const& rhs);
   void update(GameObject& gameObject, World& world, InputHandler& inputHandler,
               PhysicsComponent* physicsComponent);
+  Rail targetRail;
 };
 
 class PhysicsComponent {

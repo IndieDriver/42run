@@ -135,11 +135,24 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
   this->speed += 0.1f * world.deltaTime;
   gameObject.transform.position.z += log(this->speed) * 2.0f * world.deltaTime;
   this->velocity.y -= 0.81f * world.deltaTime;
-  gameObject.transform.position += velocity * world.deltaTime;
+  gameObject.transform.position.y += velocity.y * world.deltaTime;
 
   gameObject.transform.position.y =
       glm::clamp(gameObject.transform.position.y, 0.0f, 1.0f);
   this->velocity.y = glm::clamp(this->velocity.y, -10.0f, 3.0f);
+
+  glm::vec3 target = gameObject.transform.position;
+  if (gameObject.inputComponent->targetRail == Rail::left) {
+    target.x = 0.25f;
+  } else if (gameObject.inputComponent->targetRail == Rail::center) {
+    target.x = 0.0f;
+  } else if (gameObject.inputComponent->targetRail == Rail::right) {
+    target.x = -0.25f;
+  }
+  // gameObject.transform.position.x = target.x;
+  gameObject.transform.position +=
+      (target - gameObject.transform.position) * world.deltaTime * 5.0f;
+
   gameObject.transform.position.x =
       glm::clamp(gameObject.transform.position.x, -0.29f, 0.29f);
   if (fabs(gameObject.transform.position.x) == 0.29f) {
@@ -153,7 +166,7 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
   }
 }
 
-InputComponent::InputComponent(void){};
+InputComponent::InputComponent(void) : targetRail(Rail::center){};
 
 InputComponent::~InputComponent(void){};
 
@@ -161,6 +174,7 @@ InputComponent::InputComponent(InputComponent const& src) { *this = src; }
 
 InputComponent& InputComponent::operator=(InputComponent const& rhs) {
   if (this != &rhs) {
+    this->targetRail = rhs.targetRail;
   }
   return (*this);
 }
@@ -169,11 +183,21 @@ void InputComponent::update(GameObject& gameObject, World& world,
                             InputHandler& inputHandler,
                             PhysicsComponent* physicsComponent) {
   if (physicsComponent != nullptr) {
+    bool left = false;
+    bool right = false;
     if (inputHandler.keys[GLFW_KEY_A] || inputHandler.keys[GLFW_KEY_LEFT]) {
-      physicsComponent->velocity.x += 1.0f * world.deltaTime;
+      left = true;
+      targetRail = Rail::left;
+      // physicsComponent->
+      // physicsComponent->velocity.x += 1.0f * world.deltaTime;
     }
     if (inputHandler.keys[GLFW_KEY_D] || inputHandler.keys[GLFW_KEY_RIGHT]) {
-      physicsComponent->velocity.x -= 1.0f * world.deltaTime;
+      right = true;
+      targetRail = Rail::right;
+      // physicsComponent->velocity.x -= 1.0f * world.deltaTime;
+    }
+    if ((right && left) || (!right && !left)) {
+      targetRail = Rail::center;
     }
     if (inputHandler.keys[GLFW_KEY_SPACE]) {
       if (gameObject.transform.position.y == 0.0f) {

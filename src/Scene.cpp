@@ -186,9 +186,7 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
     this->_paused = true;
   }
 
-  _camera->pos = _player->transform.position;
-  _camera->pos.y += 0.3f;
-  _camera->pos.z -= 0.5f;
+  _camera->pos = _player->transform.position + glm::vec3(0.0f, 0.3f, -0.5f);
 
   _camera->update();
   _renderer->view = this->_camera->view;
