@@ -19,14 +19,15 @@ class Scene {
   Scene(Scene const& src);
   virtual ~Scene(void);
   Scene& operator=(Scene const& rhs);
-  std::deque<GameObject*> floors;
-  std::vector<Texture*> floor_textures;
-  std::vector<Texture*> wall_textures;
-  std::vector<Texture*> roof_textures;
-  World world;
-  VAO* vao_cube;
   void update(InputHandler& inputHandler, float deltaTime);
   void draw();
+
+  World world;
+  VAO* vao_cube;
+  std::deque<GameObject*> floors;
+  std::vector<Texture*> floor_textures_pool;
+  std::vector<Texture*> wall_textures_pool;
+  std::vector<Texture*> roof_textures_pool;
 
   GLuint shader_id;
   std::vector<Floor> floor_pool;
@@ -43,6 +44,7 @@ class Scene {
 
   void pushObstacleModel(std::string model_filename,
                          std::string texture_filename);
+  void createPlayer();
 
   Texture* addTexture(std::string filename);
   VAO* addVAO(std::string filename);

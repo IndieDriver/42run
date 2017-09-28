@@ -49,26 +49,15 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer)
   this->floor_pool.push_back(floor_setup2);
   this->floor_pool.push_back(floor_setup3);
 
-  this->floor_textures.push_back(addTexture("textures/floor_black.png"));
-  this->wall_textures.push_back(addTexture("textures/white_wall.png"));
-  this->wall_textures.push_back(addTexture("textures/wood_tex.png"));
+  this->floor_textures_pool.push_back(addTexture("textures/floor_black.png"));
+  this->wall_textures_pool.push_back(addTexture("textures/white_wall.png"));
+  this->wall_textures_pool.push_back(addTexture("textures/wood_tex.png"));
 
   this->vao_cube = addVAO("models/cube.obj");
 
   pushObstacleModel("models/table.obj", "models/table.png");
 
-  GameObject* player =
-      new GameObject(shader_id, vao_cube, nullptr, new InputComponent(),
-                     new PhysicsComponent(), nullptr);
-  player->aabb_min = glm::vec3(-0.2f, 0.1f, -0.2f);
-  player->aabb_max = glm::vec3(0.2f, 0.5f, 0.2f);
-  player->updateAABB();
-  print_vec3(player->aabb_min);
-  print_vec3(player->aabb_max);
-  player->transform.scale = glm::vec3(0.1f, 0.1f, 0.1f);
-  player->is_collider = true;
-  this->_player = player;
-  world.entities.push_back(player);
+  createPlayer();
 
   pushNewFloor();
   pushNewFloor();
@@ -96,17 +85,22 @@ Scene::~Scene(void) {
 Scene& Scene::operator=(Scene const& rhs) {
   if (this != &rhs) {
     this->floors = rhs.floors;
-    this->floor_textures = rhs.floor_textures;
-    this->wall_textures = rhs.wall_textures;
-    this->roof_textures = rhs.roof_textures;
+    this->floor_textures_pool = rhs.floor_textures_pool;
+    this->wall_textures_pool = rhs.wall_textures_pool;
+    this->roof_textures_pool = rhs.roof_textures_pool;
     this->world = rhs.world;
     this->vao_cube = rhs.vao_cube;
     this->shader_id = rhs.shader_id;
+    this->floor_pool = rhs.floor_pool;
+    this->obstacle_pool = rhs.obstacle_pool;
     this->_camera = rhs._camera;
     this->_renderer = rhs._renderer;
     this->_player = rhs._player;
     this->_meter_counter = rhs._meter_counter;
     this->_paused = rhs._paused;
+    this->_difficulty = rhs._difficulty;
+    this->_scene_vaos = rhs._scene_vaos;
+    this->_scene_textures = rhs._scene_textures;
   }
   return (*this);
 }
@@ -208,17 +202,17 @@ void Scene::populateFloor(GameObject* floor_ptr, const Floor& setup) {
       int block_id = setup.setup[i * 9 + j];
       if (block_id == 0) {
         GameObject* mfloor =
-            new GameObject(shader_id, vao_cube, this->floor_textures[0],
+            new GameObject(shader_id, vao_cube, this->floor_textures_pool[0],
                            nullptr, nullptr, floor_ptr, glm::vec3(j, -1.0f, i));
         GameObject* mroof =
-            new GameObject(shader_id, vao_cube, this->floor_textures[0],
+            new GameObject(shader_id, vao_cube, this->floor_textures_pool[0],
                            nullptr, nullptr, floor_ptr, glm::vec3(j, 1.0f, i));
         world.entities.push_back(mfloor);
         world.entities.push_back(mroof);
       } else if (block_id != 0) {
         Texture* texture = nullptr;
-        if (block_id - 1 < this->wall_textures.size()) {
-          texture = this->wall_textures[block_id - 1];
+        if (block_id - 1 < this->wall_textures_pool.size()) {
+          texture = this->wall_textures_pool[block_id - 1];
         }
         GameObject* mwall =
             new GameObject(shader_id, vao_cube, texture, nullptr, nullptr,
@@ -295,4 +289,19 @@ void Scene::addObstacle(GameObject* parent) {
     newObstacle->is_collider = true;
     world.entities.push_back(newObstacle);
   }
+}
+
+void Scene::createPlayer() {
+  GameObject* player =
+      new GameObject(shader_id, this->vao_cube, nullptr, new InputComponent(),
+                     new PhysicsComponent(), nullptr);
+  player->aabb_min = glm::vec3(-0.2f, 0.1f, -0.2f);
+  player->aabb_max = glm::vec3(0.2f, 0.5f, 0.2f);
+  player->transform.scale = glm::vec3(0.1f, 0.1f, 0.1f);
+  player->updateAABB();
+  print_vec3(player->aabb_min);
+  print_vec3(player->aabb_max);
+  player->is_collider = true;
+  this->_player = player;
+  world.entities.push_back(player);
 }

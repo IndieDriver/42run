@@ -14,14 +14,19 @@ int main() {
   Camera camera = Camera(glm::vec3(0.0f, 0.3f, -1.0f),
                          glm::vec3(0.0f, 0.3f, 0.0f), env.width, env.height);
   Renderer renderer(env.width, env.height);
-  Scene scene(shader, &camera, &renderer);
+  Scene *scene = new Scene(shader, &camera, &renderer);
   while (!glfwWindowShouldClose(env.window)) {
     env.updateFpsCounter();
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glfwPollEvents();
-    scene.update(env.inputHandler, env.getDeltaTime());
-    scene.draw();
+    if (env.inputHandler.keys[GLFW_KEY_R]) {
+      delete scene;
+      scene = new Scene(shader, &camera, &renderer);
+      env.inputHandler.keys[GLFW_KEY_R] = false;
+    }
+    scene->update(env.inputHandler, env.getDeltaTime());
+    scene->draw();
     glfwSwapBuffers(env.window);
     GL_DUMP_ERROR("draw loop");
     if (glfwGetKey(env.window, GLFW_KEY_ESCAPE)) {
@@ -29,4 +34,5 @@ int main() {
     }
   }
   glfwTerminate();
+  delete scene;
 }
