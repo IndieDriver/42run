@@ -36,9 +36,17 @@ class Scene {
   Scene(void);
   void drawUI();
   void drawPauseUI();
+
   void popOldFloor();
   void pushNewFloor();
   void populateFloor(GameObject* floor_ptr, const Floor& setup);
+
+  void pushObstacleModel(std::string model_filename,
+                         std::string texture_filename);
+
+  Texture* addTexture(std::string filename);
+  VAO* addVAO(std::string filename);
+
   void addObstacle(GameObject* parent);
   Camera* _camera;
   Renderer* _renderer;
@@ -46,4 +54,7 @@ class Scene {
   float _meter_counter;
   bool _paused;
   int _difficulty;
+
+  std::vector<VAO*> _scene_vaos;
+  std::vector<Texture*> _scene_textures;
 };

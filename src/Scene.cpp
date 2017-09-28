@@ -49,23 +49,13 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer)
   this->floor_pool.push_back(floor_setup2);
   this->floor_pool.push_back(floor_setup3);
 
-  Texture* tex_ground = new Texture("textures/floor_black.png");
-  Texture* tex_wall_white = new Texture("textures/white_wall.png");
-  Texture* tex_wall_wood = new Texture("textures/wood_tex.png");
+  this->floor_textures.push_back(addTexture("textures/floor_black.png"));
+  this->wall_textures.push_back(addTexture("textures/white_wall.png"));
+  this->wall_textures.push_back(addTexture("textures/wood_tex.png"));
 
-  this->floor_textures.push_back(tex_ground);
-  this->wall_textures.push_back(tex_wall_white);
-  this->wall_textures.push_back(tex_wall_wood);
+  this->vao_cube = addVAO("models/cube.obj");
 
-  Model cube_model("models/cube.obj");
-  this->vao_cube = new VAO(cube_model.vertices, cube_model.indices);
-
-  Model table_model("models/table.obj");
-  VAO* vao_table = new VAO(table_model.vertices, table_model.indices);
-  Texture* texture_table = new Texture("models/table.png");
-  GameObject* go_table = new GameObject(shader.id, vao_table, texture_table,
-                                        nullptr, nullptr, nullptr);
-  obstacle_pool.push_back(go_table);
+  pushObstacleModel("models/table.obj", "models/table.png");
 
   GameObject* player =
       new GameObject(shader_id, vao_cube, nullptr, new InputComponent(),
@@ -92,19 +82,15 @@ Scene::~Scene(void) {
   for (auto entity : world.entities) {
     delete entity;
   }
-  for (auto tex : floor_textures) {
-    delete tex;
-  }
-  for (auto tex : wall_textures) {
-    delete tex;
-  }
-  for (auto tex : roof_textures) {
-    delete tex;
-  }
   for (auto obs : obstacle_pool) {
     delete obs;
   }
-  delete vao_cube;
+  for (auto vao : _scene_vaos) {
+    delete vao;
+  }
+  for (auto tex : _scene_textures) {
+    delete tex;
+  }
 }
 
 Scene& Scene::operator=(Scene const& rhs) {
@@ -258,6 +244,29 @@ void Scene::populateFloor(GameObject* floor_ptr, const Floor& setup) {
       addObstacle(floor_ptr);
     }
   }
+}
+
+Texture* Scene::addTexture(std::string filename) {
+  Texture* texture = new Texture(filename);
+  this->_scene_textures.push_back(texture);
+  return (texture);
+}
+
+VAO* Scene::addVAO(std::string filename) {
+  Model model(filename);
+  VAO* vao = new VAO(model.vertices, model.indices);
+  this->_scene_vaos.push_back(vao);
+  return (vao);
+}
+
+void Scene::pushObstacleModel(std::string model_filename,
+                              std::string texture_filename) {
+  VAO* vao = addVAO(model_filename);
+  Texture* texture = addTexture(texture_filename);
+  GameObject* gameObject =
+      new GameObject(shader_id, vao, texture, nullptr, nullptr, nullptr);
+
+  this->obstacle_pool.push_back(gameObject);
 }
 
 void Scene::addObstacle(GameObject* parent) {
