@@ -68,16 +68,16 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer)
 Scene::Scene(Scene const& src) { *this = src; }
 
 Scene::~Scene(void) {
-  for (auto entity : world.entities) {
+  for (GameObject* entity : world.entities) {
     delete entity;
   }
-  for (auto obs : obstacle_pool) {
+  for (GameObject* obs : obstacle_pool) {
     delete obs;
   }
-  for (auto vao : _scene_vaos) {
+  for (VAO* vao : _scene_vaos) {
     delete vao;
   }
-  for (auto tex : _scene_textures) {
+  for (Texture* tex : _scene_textures) {
     delete tex;
   }
 }
@@ -106,6 +106,10 @@ Scene& Scene::operator=(Scene const& rhs) {
 }
 
 void Scene::update(InputHandler& inputHandler, float deltaTime) {
+  if (inputHandler.keys[GLFW_KEY_P]) {
+    this->_paused = !this->_paused;
+    inputHandler.keys[GLFW_KEY_P] = false;
+  }
   if (this->_paused) return;
   this->_difficulty = floor(fmod(_meter_counter, 20));
   this->_difficulty = glm::clamp(this->_difficulty, 0, 20);
@@ -194,6 +198,7 @@ void Scene::pushNewFloor() {
 
   this->world.entities.push_back(newFloor);
   this->floors.push_back(newFloor);
+  std::cout << "world entities: " << this->world.entities.size() << std::endl;
 }
 
 void Scene::populateFloor(GameObject* floor_ptr, const Floor& setup) {

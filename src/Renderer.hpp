@@ -9,12 +9,14 @@
 
 struct Texture {
   Texture(std::string filename);
+  ~Texture();
   GLuint id;
 };
 
 struct VAO {
   VAO(std::vector<Vertex> vertices);
   VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices);
+  ~VAO();
   GLuint vao;
   GLuint ebo;
   GLsizei vertices_size;
@@ -25,6 +27,7 @@ struct VAO {
 
  private:
   void calc_aabb(std::vector<Vertex> vertices, glm::mat4 model_matrix);
+  GLuint _vbo;
 };
 
 struct RenderAttrib {
@@ -59,6 +62,7 @@ class TextRenderer {
 
  public:
   TextRenderer(void);
+  ~TextRenderer();
   void renderText(float pos_x, float pos_y, float scale, std::string text,
                   glm::vec3 color, glm::mat4 ortho);
 

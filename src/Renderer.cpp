@@ -145,6 +145,12 @@ TextRenderer::TextRenderer(void) {
   glBindVertexArray(0);
 }
 
+TextRenderer::~TextRenderer() {
+  for (auto &character : this->_characters) {
+    glDeleteTextures(1, &character.second.textureID);
+  }
+}
+
 void TextRenderer::renderText(float pos_x, float pos_y, float scale,
                               std::string text, glm::vec3 color,
                               glm::mat4 ortho) {
@@ -187,19 +193,19 @@ void TextRenderer::renderText(float pos_x, float pos_y, float scale,
 }
 
 VAO::VAO(std::vector<Vertex> vertices) : vertices(vertices) {
-  GLuint vbo;
+  this->_vbo = -1;
   this->vao = -1;
   this->ebo = -1;
   this->vertices_size = vertices.size();
-  glGenBuffers(1, &vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glGenBuffers(1, &this->_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, this->_vbo);
   glBufferData(GL_ARRAY_BUFFER, this->vertices_size * sizeof(Vertex),
                vertices.data(), GL_STATIC_DRAW);
 
   glGenVertexArrays(1, &this->vao);
   glBindVertexArray(this->vao);
 
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, this->_vbo);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                         (GLvoid *)offsetof(Vertex, position));
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
@@ -213,18 +219,20 @@ VAO::VAO(std::vector<Vertex> vertices) : vertices(vertices) {
 
 VAO::VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices)
     : vertices(vertices) {
-  GLuint vbo;
+  this->_vbo = -1;
+  this->vao = -1;
+  this->ebo = -1;
   this->vertices_size = vertices.size();
   this->indices_size = indices.size();
-  glGenBuffers(1, &vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glGenBuffers(1, &this->_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, this->_vbo);
   glBufferData(GL_ARRAY_BUFFER, this->vertices_size * sizeof(Vertex),
                vertices.data(), GL_STATIC_DRAW);
 
   glGenVertexArrays(1, &this->vao);
   glBindVertexArray(this->vao);
 
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, this->_vbo);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                         (GLvoid *)offsetof(Vertex, position));
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
@@ -239,6 +247,12 @@ VAO::VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices)
   glEnableVertexAttribArray(1);
 
   calc_aabb(vertices, glm::mat4(1.0f));
+}
+
+VAO::~VAO() {
+  if (this->_vbo != -1) glDeleteBuffers(1, &this->_vbo);
+  if (this->ebo != -1) glDeleteBuffers(1, &this->ebo);
+  if (this->vao != -1) glDeleteVertexArrays(1, &this->vao);
 }
 
 void VAO::calc_aabb(std::vector<Vertex> vertices, glm::mat4 model_matrix) {
@@ -280,3 +294,5 @@ Texture::Texture(std::string filename) : id(-1) {
     std::cerr << "Invalid texture file: " << filename << std::endl;
   }
 }
+
+Texture::~Texture() { glDeleteTextures(1, &this->id); }

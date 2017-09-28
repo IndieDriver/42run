@@ -64,7 +64,14 @@ GameObject::GameObject(GLuint shader, VAO* vao, Texture* texture,
 
 GameObject::GameObject(GameObject const& src) { *this = src; }
 
-GameObject::~GameObject(void) {}
+GameObject::~GameObject(void) {
+  if (this->inputComponent != nullptr) {
+    delete this->inputComponent;
+  }
+  if (this->physicsComponent != nullptr) {
+    delete this->physicsComponent;
+  }
+}
 
 GameObject& GameObject::operator=(GameObject const& rhs) {
   if (this != &rhs) {
