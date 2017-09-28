@@ -80,34 +80,10 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer)
   this->_player = player;
   world.entities.push_back(player);
 
-  GameObject* floor1 =
-      new GameObject(shader_id, nullptr, nullptr, nullptr, nullptr, nullptr);
-  GameObject* floor2 =
-      new GameObject(shader_id, nullptr, nullptr, nullptr, nullptr, nullptr);
-  GameObject* floor3 =
-      new GameObject(shader_id, nullptr, nullptr, nullptr, nullptr, nullptr);
-  GameObject* floor4 =
-      new GameObject(shader_id, nullptr, nullptr, nullptr, nullptr, nullptr);
-
-  floor1->transform.position = glm::vec3(-4.0f, 0.5f, 0.0f);
-  floor2->transform.position = glm::vec3(-4.0f, 0.5f, 9.0f);
-  floor3->transform.position = glm::vec3(-4.0f, 0.5f, 18.0f);
-  floor4->transform.position = glm::vec3(-4.0f, 0.5f, 27.0f);
-
-  populateFloor(floor1, floor_pool[0]);
-  populateFloor(floor2, floor_pool[1]);
-  populateFloor(floor3, floor_pool[2]);
-  populateFloor(floor4, floor_pool[0]);
-
-  world.entities.push_back(floor1);
-  world.entities.push_back(floor2);
-  world.entities.push_back(floor3);
-  world.entities.push_back(floor4);
-
-  floors.push_back(floor1);
-  floors.push_back(floor2);
-  floors.push_back(floor3);
-  floors.push_back(floor4);
+  pushNewFloor();
+  pushNewFloor();
+  pushNewFloor();
+  pushNewFloor();
 }
 
 Scene::Scene(Scene const& src) { *this = src; }
@@ -156,34 +132,8 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
   if (this->floors.size() > 0 && this->floors.front()->transform.position.z -
                                          _player->transform.position.z <
                                      -12.0f) {
-    GameObject* oldFloor = this->floors.front();
-    world.entities.erase(
-        std::remove_if(world.entities.begin(), world.entities.end(),
-                       [&oldFloor](GameObject* go) {
-                         if (go->parent != nullptr &&
-                             (go->parent == oldFloor || go == oldFloor)) {
-                           delete go;
-                           return (true);
-                         }
-                         return (false);
-                       }),
-        world.entities.end());
-    this->floors.pop_front();
-
-    glm::vec3 floorPos = this->floors.back()->transform.position;
-    floorPos.z += 9.0f;
-    GameObject* newFloor =
-        new GameObject(shader_id, nullptr, nullptr, nullptr, nullptr, nullptr);
-    std::random_device rd;
-    std::mt19937 mt(rd());
-    std::uniform_int_distribution<int> dist(0, floor_pool.size() - 1);
-    int rand_nb = dist(mt);
-
-    populateFloor(newFloor, floor_pool[dist(mt)]);
-    newFloor->transform.position = floorPos;
-
-    this->world.entities.push_back(newFloor);
-    this->floors.push_back(newFloor);
+    popOldFloor();
+    pushNewFloor();
   }
   world.update(inputHandler, deltaTime);
 
@@ -225,6 +175,45 @@ void Scene::drawPauseUI() {
       (this->_renderer->getScreenWidth() / 2.0f) - 75.0f,
       this->_renderer->getScreenHeight() / 2.0f, 1.0f, "Pause",
       glm::vec3(0.0f, 0.0f, 0.0f));
+}
+
+void Scene::popOldFloor() {
+  if (this->floors.size() == 0) return;
+  GameObject* oldFloor = this->floors.front();
+  world.entities.erase(
+      std::remove_if(world.entities.begin(), world.entities.end(),
+                     [&oldFloor](GameObject* go) {
+                       if (go->parent != nullptr &&
+                           (go->parent == oldFloor || go == oldFloor)) {
+                         delete go;
+                         return (true);
+                       }
+                       return (false);
+                     }),
+      world.entities.end());
+  this->floors.pop_front();
+}
+
+void Scene::pushNewFloor() {
+  glm::vec3 floorPos;
+  if (this->floors.size() == 0) {
+    floorPos = glm::vec3(-4.0f, 0.5f, -9.0f);
+  } else {
+    floorPos = this->floors.back()->transform.position;
+  }
+  floorPos.z += 9.0f;
+  GameObject* newFloor =
+      new GameObject(shader_id, nullptr, nullptr, nullptr, nullptr, nullptr);
+  std::random_device rd;
+  std::mt19937 mt(rd());
+  std::uniform_int_distribution<int> dist(0, floor_pool.size() - 1);
+  int rand_nb = dist(mt);
+
+  populateFloor(newFloor, floor_pool[dist(mt)]);
+  newFloor->transform.position = floorPos;
+
+  this->world.entities.push_back(newFloor);
+  this->floors.push_back(newFloor);
 }
 
 void Scene::populateFloor(GameObject* floor_ptr, const Floor& setup) {

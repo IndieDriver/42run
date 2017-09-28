@@ -27,7 +27,6 @@ class Scene {
   VAO* vao_cube;
   void update(InputHandler& inputHandler, float deltaTime);
   void draw();
-  void populateFloor(GameObject* floor_ptr, const Floor& setup);
 
   GLuint shader_id;
   std::vector<Floor> floor_pool;
@@ -37,6 +36,9 @@ class Scene {
   Scene(void);
   void drawUI();
   void drawPauseUI();
+  void popOldFloor();
+  void pushNewFloor();
+  void populateFloor(GameObject* floor_ptr, const Floor& setup);
   void addObstacle(GameObject* parent);
   Camera* _camera;
   Renderer* _renderer;
