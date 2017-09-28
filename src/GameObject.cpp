@@ -174,6 +174,11 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
     // Lateral wall was hit, nullify lateral velocity
     velocity.x = 0.0f;
   }
+  if (gameObject.transform.position.y == 0.0f ||
+      gameObject.transform.position.y == 1.0f) {
+    // Same for gravity, on floor and roof
+    velocity.y = 0.0f;
+  }
   if (world.collide(gameObject)) {
     this->has_collide = true;
     std::cout << "collide" << std::endl;
@@ -213,7 +218,7 @@ void InputComponent::update(GameObject& gameObject, World& world,
     }
     if (inputHandler.keys[GLFW_KEY_SPACE]) {
       if (gameObject.transform.position.y == 0.0f) {
-        physicsComponent->velocity.y = 0.7f;
+        physicsComponent->velocity.y = 0.8f;
       }
     }
   }

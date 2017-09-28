@@ -36,8 +36,6 @@ Floor floor_setup3 = {{
     1, 1, 1, 1, 0, 1, 1, 1, 1   //
 }};
 
-//{{4.0f, 0.0f, 3.0f}, {4.0f, 0.0f, 7.0f}}};
-
 Scene::Scene(void) {}
 
 Scene::Scene(Shader shader, Camera* camera, Renderer* renderer)
@@ -45,7 +43,8 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer)
       _camera(camera),
       _renderer(renderer),
       _meter_counter(-1),
-      _paused(false) {
+      _paused(false),
+      _difficulty(0) {
   this->floor_pool.push_back(floor_setup1);
   this->floor_pool.push_back(floor_setup2);
   this->floor_pool.push_back(floor_setup3);
@@ -152,6 +151,8 @@ Scene& Scene::operator=(Scene const& rhs) {
 
 void Scene::update(InputHandler& inputHandler, float deltaTime) {
   if (this->_paused) return;
+  this->_difficulty = floor(fmod(_meter_counter, 20));
+  this->_difficulty = glm::clamp(this->_difficulty, 0, 20);
   if (this->floors.size() > 0 && this->floors.front()->transform.position.z -
                                          _player->transform.position.z <
                                      -12.0f) {
@@ -261,7 +262,7 @@ void Scene::populateFloor(GameObject* floor_ptr, const Floor& setup) {
   // Populate floor with obstacle
   std::random_device rd;
   std::mt19937 mt(rd());
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < this->_difficulty; i++) {
     std::uniform_int_distribution<int> dist(0, 2);
     int rand_nb = dist(mt);
     if (rand_nb == 0) {

@@ -13,7 +13,6 @@ int main() {
 
   Camera camera = Camera(glm::vec3(0.0f, 0.3f, -1.0f),
                          glm::vec3(0.0f, 0.3f, 0.0f), env.width, env.height);
-
   Renderer renderer(env.width, env.height);
   Scene scene(shader, &camera, &renderer);
   while (!glfwWindowShouldClose(env.window)) {

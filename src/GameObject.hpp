@@ -31,7 +31,7 @@ struct Transform {
   }
 
   glm::mat4 toModelMatrix() {
-    // only update when one attribute has changed
+    // only update when at least one attribute has changed
     if (position != _old_position || rotation != _old_rotation ||
         scale != _old_scale) {
       glm::mat4 mat_translation = glm::translate(position);

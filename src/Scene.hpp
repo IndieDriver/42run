@@ -43,4 +43,5 @@ class Scene {
   GameObject* _player;
   float _meter_counter;
   bool _paused;
+  int _difficulty;
 };
