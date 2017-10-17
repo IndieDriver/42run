@@ -56,6 +56,7 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer)
   this->vao_cube = addVAO("models/cube.obj");
 
   pushObstacleModel("models/table.obj", "models/table.png");
+  pushObstacleModel("models/marvin.obj", "models/table.png");
 
   createPlayer();
 
@@ -125,7 +126,7 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
     this->_paused = true;
   }
 
-  _camera->pos = _player->transform.position + glm::vec3(0.0f, 0.3f, -0.5f);
+  _camera->pos = _player->transform.position + glm::vec3(0.0f, 0.0f, -2.0f);
 
   _camera->update();
   _renderer->view = this->_camera->view;
@@ -297,16 +298,28 @@ void Scene::addObstacle(GameObject* parent) {
 }
 
 void Scene::createPlayer() {
+  VAO* marvin_vao = addVAO("models/marvin.obj");
+  std::cout << "vao size: " << marvin_vao->vertices.size() << std::endl;
+  std::cout << "vao indices: " << marvin_vao->indices_size << std::endl;
+  Texture* texture = addTexture("textures/wood_tex.png");
   GameObject* player =
-      new GameObject(shader_id, this->vao_cube, nullptr, new InputComponent(),
+      new GameObject(shader_id, marvin_vao, texture, new InputComponent(),
                      new PhysicsComponent(), nullptr);
-  player->aabb_min = glm::vec3(-0.2f, 0.1f, -0.2f);
-  player->aabb_max = glm::vec3(0.2f, 0.5f, 0.2f);
-  player->transform.scale = glm::vec3(0.1f, 0.1f, 0.1f);
+  // player->aabb_min = glm::vec3(-0.2f, 0.1f, -0.2f);
+  // player->aabb_max = glm::vec3(0.2f, 0.5f, 0.2f);
+  print_vec3(player->aabb_min);
+  print_vec3(player->aabb_max);
+  //player->transform.scale = glm::vec3(0.01f, 0.01f, 0.01f);
+  // player->transform.scale = glm::vec3(4.0f, 4.0f, 4.0f);
+  // player->transform.rotation = glm::vec3(90.0f, 0.0f, 0.0f);
+  player->transform.scale = glm::vec3(0.5f, 0.5f, 0.5f);
   player->updateAABB();
   print_vec3(player->aabb_min);
   print_vec3(player->aabb_max);
+  print_vec3(player->transform.position);
   player->is_collider = true;
   this->_player = player;
+  std::cout << "scale: ";
+  print_vec3(this->_player->transform.scale);
   world.entities.push_back(player);
 }
