@@ -68,11 +68,4 @@ void Camera::queryInput(std::array<bool, 1024> keys, float mouse_x,
     glm::vec3 tmp = right * speed * deltaTime;
     pos = pos + tmp;
   }
-  /* if (inputHandler->mouseDisabled) return; */
-  /*
-  if (mouse_x != mouseXpos || mouse_y != mouseYpos) {
-    mouseXpos = mouse_x;
-    mouseYpos = mouse_y;
-    mouseMoved = true;
-  } */
 }
