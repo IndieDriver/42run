@@ -8,11 +8,6 @@
 #include "Shader.hpp"
 #include "run.hpp"
 
-struct Floor {
-  std::array<int, 81> setup;
-  std::vector<GameObject*> entities;
-};
-
 class Scene {
  public:
   Scene(Shader shader, Camera* camera, Renderer* renderer);
@@ -30,7 +25,7 @@ class Scene {
   std::vector<Texture*> roof_textures_pool;
 
   GLuint shader_id;
-  std::vector<Floor> floor_pool;
+  std::vector<GameObject*> floor_pool;
   std::vector<GameObject*> obstacle_pool;
 
  private:
@@ -38,9 +33,9 @@ class Scene {
   void drawUI();
   void drawPauseUI();
 
-  void popOldFloor();
+  void cleanup();
   void pushNewFloor();
-  void populateFloor(GameObject* floor_ptr, const Floor& setup);
+  void populateFloor(GameObject* floor_ptr);
 
   void pushObstacleModel(std::string model_filename,
                          std::string texture_filename);

@@ -80,8 +80,11 @@ GameObject& GameObject::operator=(GameObject const& rhs) {
     this->_renderAttrib.vao = rhs._renderAttrib.vao;
     this->_renderAttrib.transforms = rhs._renderAttrib.transforms;
     this->_renderAttrib.texture = rhs._renderAttrib.texture;
-    this->inputComponent = rhs.inputComponent;
-    this->physicsComponent = rhs.physicsComponent;
+    this->inputComponent =
+        rhs.inputComponent ? new InputComponent(*rhs.inputComponent) : nullptr;
+    this->physicsComponent = rhs.physicsComponent
+                                 ? new PhysicsComponent(*rhs.physicsComponent)
+                                 : nullptr;
     this->transform.position = rhs.transform.position;
     this->transform.rotation = rhs.transform.rotation;
     this->transform.scale = rhs.transform.scale;
@@ -188,7 +191,7 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
   }
   if (world.collide(gameObject)) {
     this->has_collide = true;
-    std::cout << "collide" << std::endl;
+    /* std::cout << "collide" << std::endl; */
     // end game ???
   }
 }

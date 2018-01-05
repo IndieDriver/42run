@@ -25,6 +25,8 @@ int main() {
       scene = new Scene(shader, &camera, &renderer);
       env.inputHandler.keys[GLFW_KEY_R] = false;
     }
+    camera.queryInput(env.inputHandler.keys, env.inputHandler.mousex,
+                      env.inputHandler.mousey);
     scene->update(env.inputHandler, env.getDeltaTime());
     scene->draw();
     glfwSwapBuffers(env.window);
