@@ -92,7 +92,7 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
     if (_player->physicsComponent->has_collide) {
       this->_paused = true;
     }
-    _camera->pos = _player->transform.position + glm::vec3(0.0f, 0.0f, -4.0f);
+    _camera->pos = _player->transform.position + glm::vec3(0.0f, 0.5f, -2.0f);
     _camera->update();
     _renderer->view = this->_camera->view;
     _renderer->proj = this->_camera->proj;
@@ -182,7 +182,7 @@ Texture* Scene::addTexture(std::string filename) {
 
 VAO* Scene::addVAO(std::string filename) {
   Model model(filename);
-  VAO* vao = new VAO(model.vertices, model.indices);
+  VAO* vao = new VAO(model.vertices);
   this->_scene_vaos.push_back(vao);
   return (vao);
 }
@@ -240,7 +240,7 @@ void Scene::createPlayer() {
   // player->transform.scale = glm::vec3(0.01f, 0.01f, 0.01f);
   // player->transform.scale = glm::vec3(4.0f, 4.0f, 4.0f);
   // player->transform.rotation = glm::vec3(90.0f, 0.0f, 0.0f);
-  player->transform.scale = glm::vec3(4.0f, 4.0f, 4.0f);
+  player->transform.scale = glm::vec3(1.0f, 1.0f, 1.0f);
   player->updateAABB();
   print_vec3(player->aabb_min);
   print_vec3(player->aabb_max);

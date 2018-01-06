@@ -10,6 +10,7 @@
 #include <glm/gtx/transform.hpp>
 #include <iostream>
 #include <random>
+#include <string>
 #include <vector>
 
 struct Vertex {

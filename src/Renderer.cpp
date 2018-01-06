@@ -47,7 +47,7 @@ void Renderer::draw() {
       glm::mat4 mvp = this->proj * this->view * attrib.transforms[0];
       glUniformMatrix4fv(glGetUniformLocation(attrib.shader, "MVP"), 1,
                          GL_FALSE, static_cast<GLfloat *>(glm::value_ptr(mvp)));
-      if (attrib.vao->ebo != -1) {
+      if (attrib.vao->ebo != 0) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, attrib.vao->ebo);
         glBindVertexArray(attrib.vao->vao);
         glDrawElements(GL_TRIANGLES, attrib.vao->indices_size, GL_UNSIGNED_INT,
@@ -193,9 +193,9 @@ void TextRenderer::renderText(float pos_x, float pos_y, float scale,
 }
 
 VAO::VAO(std::vector<Vertex> vertices) : vertices(vertices) {
-  this->_vbo = -1;
-  this->vao = -1;
-  this->ebo = -1;
+  this->_vbo = 0;
+  this->vao = 0;
+  this->ebo = 0;
   this->vertices_size = vertices.size();
   glGenBuffers(1, &this->_vbo);
   glBindBuffer(GL_ARRAY_BUFFER, this->_vbo);
@@ -219,9 +219,9 @@ VAO::VAO(std::vector<Vertex> vertices) : vertices(vertices) {
 
 VAO::VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices)
     : vertices(vertices) {
-  this->_vbo = -1;
-  this->vao = -1;
-  this->ebo = -1;
+  this->_vbo = 0;
+  this->vao = 0;
+  this->ebo = 0;
   this->vertices_size = vertices.size();
   this->indices_size = indices.size();
   glGenBuffers(1, &this->_vbo);
@@ -250,9 +250,9 @@ VAO::VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices)
 }
 
 VAO::~VAO() {
-  if (this->_vbo != -1) glDeleteBuffers(1, &this->_vbo);
-  if (this->ebo != -1) glDeleteBuffers(1, &this->ebo);
-  if (this->vao != -1) glDeleteVertexArrays(1, &this->vao);
+  if (this->_vbo != 0) glDeleteBuffers(1, &this->_vbo);
+  if (this->ebo != 0) glDeleteBuffers(1, &this->ebo);
+  if (this->vao != 0) glDeleteVertexArrays(1, &this->vao);
 }
 
 void VAO::calc_aabb(std::vector<Vertex> vertices, glm::mat4 model_matrix) {
