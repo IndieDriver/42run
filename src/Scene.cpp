@@ -82,7 +82,7 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
   this->_difficulty = glm::clamp(this->_difficulty, 0, 20);
   if (this->floors.size() > 0 && this->floors.back()->transform.position.z -
                                          this->_player->transform.position.z <
-                                     70.0f) {
+                                     125.0f) {
     pushNewFloor();
   }
   cleanup();
@@ -132,7 +132,7 @@ void Scene::cleanup() {
   world.entities.erase(
       std::remove_if(world.entities.begin(), world.entities.end(),
                      [playerPos](GameObject* go) {
-                       if (go->transform.position.z - playerPos.z < -5.0f) {
+                       if (go->transform.position.z - playerPos.z < -10.0f) {
                          delete go;
                          return (true);
                        }
