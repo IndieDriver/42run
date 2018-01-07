@@ -169,16 +169,16 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
 
   glm::vec3 target = gameObject.transform.position;
   if (gameObject.inputComponent->targetRail == Rail::left) {
-    target.x = 1.0f;
+    target.x = 1.25f;
   } else if (gameObject.inputComponent->targetRail == Rail::center) {
     target.x = 0.0f;
   } else if (gameObject.inputComponent->targetRail == Rail::right) {
-    target.x = -1.0f;
+    target.x = -1.25f;
   }
   gameObject.transform.position +=
       (target - gameObject.transform.position) * world.deltaTime * 5.0f;
   if (world.collide(gameObject)) {
-    this->has_collide = true;
+    // this->has_collide = true;
     /* std::cout << "collide" << std::endl; */
     // end game ???
   }

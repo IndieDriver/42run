@@ -38,13 +38,13 @@ class Scene {
   void populateFloor(GameObject* floor_ptr);
 
   void pushObstacleModel(std::string model_filename,
-                         std::string texture_filename);
+                         std::string texture_filename, glm::vec3 scale);
   void createPlayer();
 
   Texture* addTexture(std::string filename);
   VAO* addVAO(std::string filename);
 
-  void addObstacle(GameObject* parent);
+  void addObstacle(glm::vec3 floorPos);
   Camera* _camera;
   Renderer* _renderer;
   GameObject* _player;

@@ -21,8 +21,9 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer)
 
   this->vao_cube = addVAO("models/cube.obj");
 
-  pushObstacleModel("models/table.obj", "models/table.png");
-  pushObstacleModel("models/marvin.obj", "models/table.png");
+  pushObstacleModel("models/table.obj", "models/table.png",
+                    glm::vec3(0.5f, 0.5f, 0.5f));
+  // pushObstacleModel("models/marvin.obj", "models/table.png");
 
   createPlayer();
 
@@ -156,6 +157,7 @@ void Scene::pushNewFloor() {
   GameObject* newFloor = new GameObject(*this->floor_pool[dist(mt)]);
 
   newFloor->transform.position = floorPos;
+  populateFloor(newFloor);
 
   this->world.entities.push_back(newFloor);
   this->floors.push_back(newFloor);
@@ -169,7 +171,7 @@ void Scene::populateFloor(GameObject* floor_ptr) {
     std::uniform_int_distribution<int> dist(0, 2);
     int rand_nb = dist(mt);
     if (rand_nb == 0) {
-      addObstacle(floor_ptr);
+      addObstacle(floor_ptr->transform.position);
     }
   }
 }
@@ -188,40 +190,40 @@ VAO* Scene::addVAO(std::string filename) {
 }
 
 void Scene::pushObstacleModel(std::string model_filename,
-                              std::string texture_filename) {
+                              std::string texture_filename, glm::vec3 scale) {
   VAO* vao = addVAO(model_filename);
   Texture* texture = addTexture(texture_filename);
   GameObject* gameObject =
       new GameObject(shader_id, vao, texture, nullptr, nullptr, nullptr);
+  gameObject->transform.scale = scale;
 
   this->obstacle_pool.push_back(gameObject);
 }
 
-void Scene::addObstacle(GameObject* parent) {
+void Scene::addObstacle(glm::vec3 floor_pos) {
   std::random_device rd;
   std::mt19937 mt(rd());
   std::uniform_int_distribution<int> dist_pos(0, 8);
   glm::vec3 obstacle_pos =
-      glm::vec3(4.0f, -0.5f, static_cast<float>(dist_pos(mt)));
+      glm::vec3(0.0f, 0.0f, static_cast<float>(dist_pos(mt)));
   if (obstacle_pool.size() > 0) {
     std::uniform_int_distribution<int> dist_rail(0, 2);
     int rand_rail = dist_rail(mt);
     if (rand_rail == 0) {  // Rail left
-      obstacle_pos.x += 0.25f;
+      obstacle_pos.x += 1.25f;
     } else if (rand_rail == 2) {  // Rail right
-      obstacle_pos.x -= 0.25f;
+      obstacle_pos.x -= 1.25f;
     }
     std::cout << "new obstacles at: ";
     print_vec3(obstacle_pos);
     std::uniform_int_distribution<int> dist_obs(0, obstacle_pool.size() - 1);
     GameObject* obstacle = obstacle_pool[dist_obs(mt)];
     GameObject* newObstacle = new GameObject(*obstacle);
-    newObstacle->parent = parent;
-    newObstacle->transform.position = obstacle_pos;
-    newObstacle->transform.scale = glm::vec3(0.08f, 0.08f, 0.08f);
+    newObstacle->transform.position = floor_pos + obstacle_pos;
+    // newObstacle->transform.scale = glm::vec3(0.08f, 0.08f, 0.08f);
     newObstacle->updateAABB();
     newObstacle->is_collider = true;
-    /* world.entities.push_back(newObstacle); */
+    world.entities.push_back(newObstacle);
   }
 }
 
@@ -229,7 +231,7 @@ void Scene::createPlayer() {
   VAO* marvin_vao = addVAO("models/marvin.obj");
   std::cout << "vao size: " << marvin_vao->vertices.size() << std::endl;
   std::cout << "vao indices: " << marvin_vao->indices_size << std::endl;
-  Texture* texture = addTexture("textures/wood_tex.png");
+  Texture* texture = addTexture("textures/marvin_tex.png");
   GameObject* player =
       new GameObject(shader_id, marvin_vao, texture, new InputComponent(),
                      new PhysicsComponent(), nullptr);
