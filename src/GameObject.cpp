@@ -158,9 +158,9 @@ PhysicsComponent& PhysicsComponent::operator=(PhysicsComponent const& rhs) {
 void PhysicsComponent::update(GameObject& gameObject, World& world) {
   has_collide = false;  // Reset every frame
   glm::vec3 backupPosition = gameObject.transform.position;
-  this->speed += 0.1f * world.deltaTime;
-  gameObject.transform.position.z += log(this->speed) * 2.0f * world.deltaTime;
-  this->velocity.y -= 0.81f * world.deltaTime;
+  this->speed += 0.2f * world.deltaTime;
+  gameObject.transform.position.z += log(this->speed) * 5.0f * world.deltaTime;
+  this->velocity.y -= 0.81f * 2.0f * world.deltaTime;
   gameObject.transform.position.y += velocity.y * world.deltaTime;
 
   gameObject.transform.position.y =
@@ -169,26 +169,14 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
 
   glm::vec3 target = gameObject.transform.position;
   if (gameObject.inputComponent->targetRail == Rail::left) {
-    target.x = 0.25f;
+    target.x = 1.0f;
   } else if (gameObject.inputComponent->targetRail == Rail::center) {
     target.x = 0.0f;
   } else if (gameObject.inputComponent->targetRail == Rail::right) {
-    target.x = -0.25f;
+    target.x = -1.0f;
   }
   gameObject.transform.position +=
       (target - gameObject.transform.position) * world.deltaTime * 5.0f;
-
-  gameObject.transform.position.x =
-      glm::clamp(gameObject.transform.position.x, -0.29f, 0.29f);
-  if (fabs(gameObject.transform.position.x) == 0.29f) {
-    // Lateral wall was hit, nullify lateral velocity
-    velocity.x = 0.0f;
-  }
-  if (gameObject.transform.position.y == 0.0f ||
-      gameObject.transform.position.y == 1.0f) {
-    // Same for gravity, on floor and roof
-    velocity.y = 0.0f;
-  }
   if (world.collide(gameObject)) {
     this->has_collide = true;
     /* std::cout << "collide" << std::endl; */
@@ -228,7 +216,7 @@ void InputComponent::update(GameObject& gameObject, World& world,
     }
     if (inputHandler.keys[GLFW_KEY_SPACE]) {
       if (gameObject.transform.position.y == 0.0f) {
-        physicsComponent->velocity.y = 0.8f;
+        physicsComponent->velocity.y = 1.8f;
       }
     }
   }

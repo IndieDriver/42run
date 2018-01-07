@@ -39,6 +39,11 @@ void Camera::update() {
   view = glm::lookAt(pos, dir + pos, up);
 }
 
+void Camera::rotate(float hor, float ver) {
+  horAngle += hor;
+  verAngle += ver;
+}
+
 glm::mat4 getMVP(glm::mat4 model, glm::mat4 view, glm::mat4 proj) {
   return (model * view * proj);
 }

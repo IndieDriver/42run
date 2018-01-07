@@ -23,6 +23,7 @@ class Camera {
   Camera(glm::vec3 pos, glm::vec3 target, int width = 0, int height = 0);
   void queryInput(std::array<bool, 1024> keys, float mouse_x, float mouse_y);
   void update();
+  void rotate(float hor, float ver);  // in radians
 
  private:
   bool mouseMoved = false;
