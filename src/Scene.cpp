@@ -22,7 +22,8 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer)
 
   pushObstacleModel("models/table.obj", "models/table.png",
                     glm::vec3(0.4f, 0.4f, 0.4f));
-  // pushObstacleModel("models/marvin.obj", "models/table.png");
+  pushObstacleModel("models/chair.obj", "textures/chair.png",
+                    glm::vec3(0.6f, 0.6f, 0.6f));
 
   createPlayer();
 
@@ -77,7 +78,7 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
     inputHandler.keys[GLFW_KEY_P] = false;
   }
   if (this->_paused) return;
-  this->_difficulty = floor(fmod(_meter_counter, 20));
+  this->_difficulty = floor(fmod(_meter_counter, 5));
   this->_difficulty = glm::clamp(this->_difficulty, 0, 20);
   if (this->floors.size() > 0 && this->floors.back()->transform.position.z -
                                          this->_player->transform.position.z <
@@ -167,7 +168,7 @@ void Scene::populateFloor(GameObject* floor_ptr) {
   std::random_device rd;
   std::mt19937 mt(rd());
   for (int i = 0; i < this->_difficulty; i++) {
-    std::uniform_int_distribution<int> dist(0, 2);
+    std::uniform_int_distribution<int> dist(0, 3);
     int rand_nb = dist(mt);
     if (rand_nb == 0) {
       addObstacle(floor_ptr->transform.position);
@@ -219,6 +220,8 @@ void Scene::addObstacle(glm::vec3 floor_pos) {
     GameObject* obstacle = obstacle_pool[dist_obs(mt)];
     GameObject* newObstacle = new GameObject(*obstacle);
     newObstacle->transform.position = floor_pos + obstacle_pos;
+    std::uniform_int_distribution<float> dist_rot(0, 360);
+    newObstacle->transform.rotation.y = glm::radians(dist_rot(mt));
     newObstacle->updateAABB();
     newObstacle->is_collider = true;
     world.entities.push_back(newObstacle);
@@ -237,9 +240,6 @@ void Scene::createPlayer() {
   // player->aabb_max = glm::vec3(0.2f, 0.5f, 0.2f);
   print_vec3(player->aabb_min);
   print_vec3(player->aabb_max);
-  // player->transform.scale = glm::vec3(0.01f, 0.01f, 0.01f);
-  // player->transform.scale = glm::vec3(4.0f, 4.0f, 4.0f);
-  // player->transform.rotation = glm::vec3(90.0f, 0.0f, 0.0f);
   player->transform.scale = glm::vec3(1.0f, 1.0f, 1.0f);
   player->updateAABB();
   print_vec3(player->aabb_min);

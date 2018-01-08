@@ -178,7 +178,7 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
   gameObject.transform.position +=
       (target - gameObject.transform.position) * world.deltaTime * 5.0f;
   if (world.collide(gameObject)) {
-    // this->has_collide = true;
+    /* this->has_collide = true; */
     /* std::cout << "collide" << std::endl; */
     // end game ???
   }
