@@ -160,11 +160,11 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
   glm::vec3 backupPosition = gameObject.transform.position;
   this->speed += 0.2f * world.deltaTime;
   gameObject.transform.position.z += log(this->speed) * 5.0f * world.deltaTime;
-  this->velocity.y -= 0.81f * 2.0f * world.deltaTime;
+  this->velocity.y -= 0.81f * 4.0f * world.deltaTime;
   gameObject.transform.position.y += velocity.y * world.deltaTime;
 
   gameObject.transform.position.y =
-      glm::clamp(gameObject.transform.position.y, 0.0f, 1.0f);
+      glm::clamp(gameObject.transform.position.y, 0.0f, 5.0f);
   this->velocity.y = glm::clamp(this->velocity.y, -10.0f, 3.0f);
 
   glm::vec3 target = gameObject.transform.position;
@@ -216,7 +216,7 @@ void InputComponent::update(GameObject& gameObject, World& world,
     }
     if (inputHandler.keys[GLFW_KEY_SPACE]) {
       if (gameObject.transform.position.y == 0.0f) {
-        physicsComponent->velocity.y = 1.8f;
+        physicsComponent->velocity.y = 2.8f;
       }
     }
   }

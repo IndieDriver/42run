@@ -114,7 +114,7 @@ void Scene::draw() {
 
 void Scene::drawUI() {
   this->_renderer->renderText(
-      this->_renderer->getScreenWidth() - 100.0f,
+      this->_renderer->getScreenWidth() - 150.0f,
       this->_renderer->getScreenHeight() - 50.0f, 1.0f,
       std::to_string(static_cast<int>(this->_meter_counter)),
       glm::vec3(0.0f, 0.0f, 0.0f));
