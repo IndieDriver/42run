@@ -92,7 +92,8 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
     if (_player->physicsComponent->has_collide) {
       this->_paused = true;
     }
-    _camera->pos = _player->transform.position + glm::vec3(0.0f, 1.5f, -1.5f);
+    /* _camera->pos = _player->transform.position + glm::vec3(0.0f, 1.5f, -1.5f); */
+    _camera->pos = glm::vec3(0.0f, 0.0f, _player->transform.position.z) + glm::vec3(0.0f, 1.5f, -1.5f);
     _camera->update();
     _renderer->view = this->_camera->view;
     _renderer->proj = this->_camera->proj;
