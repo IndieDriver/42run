@@ -10,19 +10,18 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer)
       _meter_counter(-1),
       _paused(false),
       _difficulty(0) {
-  VAO* marvin_vao = addVAO("models/floor1.obj");
-  Texture* texture = addTexture("textures/floor_tex.png");
-  this->floor_pool.push_back(new GameObject(shader_id, marvin_vao, texture,
+  VAO* floor_vao = addVAO("models/floor2.obj");
+  this->floor_pool.push_back(new GameObject(shader_id, floor_vao, addTexture("textures/floor4.png"),
+                                            nullptr, nullptr, nullptr));
+  this->floor_pool.push_back(new GameObject(shader_id, floor_vao, addTexture("textures/floor5.png"),
                                             nullptr, nullptr, nullptr));
 
   this->floor_textures_pool.push_back(addTexture("textures/floor_black.png"));
   this->wall_textures_pool.push_back(addTexture("textures/white_wall.png"));
   this->wall_textures_pool.push_back(addTexture("textures/wood_tex.png"));
 
-  this->vao_cube = addVAO("models/cube.obj");
-
   pushObstacleModel("models/table.obj", "models/table.png",
-                    glm::vec3(0.5f, 0.5f, 0.5f));
+                    glm::vec3(0.4f, 0.4f, 0.4f));
   // pushObstacleModel("models/marvin.obj", "models/table.png");
 
   createPlayer();
@@ -57,7 +56,6 @@ Scene& Scene::operator=(Scene const& rhs) {
     this->wall_textures_pool = rhs.wall_textures_pool;
     this->roof_textures_pool = rhs.roof_textures_pool;
     this->world = rhs.world;
-    this->vao_cube = rhs.vao_cube;
     this->shader_id = rhs.shader_id;
     this->floor_pool = rhs.floor_pool;
     this->obstacle_pool = rhs.obstacle_pool;
@@ -130,6 +128,7 @@ void Scene::drawPauseUI() {
 
 void Scene::cleanup() {
   glm::vec3 playerPos = this->_player->transform.position;
+  // Remove everything behind the player
   world.entities.erase(
       std::remove_if(world.entities.begin(), world.entities.end(),
                      [playerPos](GameObject* go) {
@@ -148,7 +147,7 @@ void Scene::pushNewFloor() {
     floorPos = glm::vec3(0.0f, -1.0f, 0.0f);
   } else {
     floorPos = this->floors.back()->transform.position;
-    floorPos.z += 19.0f;
+    floorPos.z += 20.0f;
   }
   std::random_device rd;
   std::mt19937 mt(rd());
@@ -203,9 +202,9 @@ void Scene::pushObstacleModel(std::string model_filename,
 void Scene::addObstacle(glm::vec3 floor_pos) {
   std::random_device rd;
   std::mt19937 mt(rd());
-  std::uniform_int_distribution<int> dist_pos(0, 8);
+  std::uniform_int_distribution<int> dist_pos(0, 5);
   glm::vec3 obstacle_pos =
-      glm::vec3(0.0f, 0.0f, static_cast<float>(dist_pos(mt)));
+      glm::vec3(0.0f, 0.0f, static_cast<float>(dist_pos(mt) * 4.0f));
   if (obstacle_pool.size() > 0) {
     std::uniform_int_distribution<int> dist_rail(0, 2);
     int rand_rail = dist_rail(mt);
@@ -220,7 +219,6 @@ void Scene::addObstacle(glm::vec3 floor_pos) {
     GameObject* obstacle = obstacle_pool[dist_obs(mt)];
     GameObject* newObstacle = new GameObject(*obstacle);
     newObstacle->transform.position = floor_pos + obstacle_pos;
-    // newObstacle->transform.scale = glm::vec3(0.08f, 0.08f, 0.08f);
     newObstacle->updateAABB();
     newObstacle->is_collider = true;
     world.entities.push_back(newObstacle);
