@@ -9,22 +9,21 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer)
       _player(nullptr),
       _meter_counter(-1),
       _paused(false),
+      _ended(false),
       _difficulty(0) {
   VAO* floor_vao = addVAO("models/floor2.obj");
-  this->floor_pool.push_back(new GameObject(shader_id, floor_vao, addTexture("textures/floor4.png"),
+  this->floor_pool.push_back(new GameObject(shader_id, floor_vao,
+                                            addTexture("textures/floor4.png"),
                                             nullptr, nullptr, nullptr));
-  this->floor_pool.push_back(new GameObject(shader_id, floor_vao, addTexture("textures/floor5.png"),
+  this->floor_pool.push_back(new GameObject(shader_id, floor_vao,
+                                            addTexture("textures/floor5.png"),
                                             nullptr, nullptr, nullptr));
 
-  this->floor_textures_pool.push_back(addTexture("textures/floor_black.png"));
-  this->wall_textures_pool.push_back(addTexture("textures/white_wall.png"));
-  this->wall_textures_pool.push_back(addTexture("textures/wood_tex.png"));
-
-  /* pushObstacleModel("models/table.obj", "models/table.png", */
-  /*                   glm::vec3(0.4f, 0.4f, 0.4f)); */
   pushObstacleModel("models/chair.obj", "textures/chair.png",
                     glm::vec3(0.6f, 0.6f, 0.6f));
   pushObstacleModel("models/table3.obj", "textures/table2.png",
+                    glm::vec3(0.6f, 0.6f, 0.6f));
+  pushObstacleModel("models/trash.obj", "textures/trash.png",
                     glm::vec3(0.6f, 0.6f, 0.6f));
 
   createPlayer();
@@ -55,9 +54,6 @@ Scene::~Scene(void) {
 Scene& Scene::operator=(Scene const& rhs) {
   if (this != &rhs) {
     this->floors = rhs.floors;
-    this->floor_textures_pool = rhs.floor_textures_pool;
-    this->wall_textures_pool = rhs.wall_textures_pool;
-    this->roof_textures_pool = rhs.roof_textures_pool;
     this->world = rhs.world;
     this->shader_id = rhs.shader_id;
     this->floor_pool = rhs.floor_pool;
@@ -67,6 +63,7 @@ Scene& Scene::operator=(Scene const& rhs) {
     this->_player = rhs._player;
     this->_meter_counter = rhs._meter_counter;
     this->_paused = rhs._paused;
+    this->_ended = rhs._ended;
     this->_difficulty = rhs._difficulty;
     this->_scene_vaos = rhs._scene_vaos;
     this->_scene_textures = rhs._scene_textures;
@@ -75,13 +72,16 @@ Scene& Scene::operator=(Scene const& rhs) {
 }
 
 void Scene::update(InputHandler& inputHandler, float deltaTime) {
+  if (this->_ended) return;
   if (inputHandler.keys[GLFW_KEY_P]) {
     this->_paused = !this->_paused;
     inputHandler.keys[GLFW_KEY_P] = false;
   }
   if (this->_paused) return;
-  this->_difficulty = floor(fmod(_meter_counter, 5));
-  this->_difficulty = glm::clamp(this->_difficulty, 0, 20);
+  if (this->_difficulty >= 4) {
+    this->_difficulty = roundf(0.2f * floor(_meter_counter / 20) + 4.0f);
+    this->_difficulty = glm::clamp(this->_difficulty, 0, 10);
+  }
   if (this->floors.size() > 0 && this->floors.back()->transform.position.z -
                                          this->_player->transform.position.z <
                                      125.0f) {
@@ -92,10 +92,12 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
 
   if (this->_player != nullptr) {
     if (_player->physicsComponent->has_collide) {
-      this->_paused = true;
+      this->_ended = true;
     }
-    /* _camera->pos = _player->transform.position + glm::vec3(0.0f, 1.5f, -1.5f); */
-    _camera->pos = glm::vec3(0.0f, 0.0f, _player->transform.position.z) + glm::vec3(0.0f, 1.5f, -1.5f);
+    /* _camera->pos = _player->transform.position + glm::vec3(0.0f, 1.5f,
+     * -1.5f); */
+    _camera->pos = glm::vec3(0.0f, 0.0f, _player->transform.position.z) +
+                   glm::vec3(0.0f, 1.5f, -1.5f);
     _camera->update();
     _renderer->view = this->_camera->view;
     _renderer->proj = this->_camera->proj;
@@ -112,6 +114,9 @@ void Scene::draw() {
   if (this->_paused) {
     drawPauseUI();
   }
+  if (this->_ended) {
+    drawGameOverUI();
+  }
   drawUI();
 }
 
@@ -127,6 +132,13 @@ void Scene::drawPauseUI() {
   this->_renderer->renderText(
       (this->_renderer->getScreenWidth() / 2.0f) - 75.0f,
       this->_renderer->getScreenHeight() / 2.0f, 1.0f, "Pause",
+      glm::vec3(0.0f, 0.0f, 0.0f));
+}
+
+void Scene::drawGameOverUI() {
+  this->_renderer->renderText(
+      (this->_renderer->getScreenWidth() / 2.0f) - 150.0f,
+      this->_renderer->getScreenHeight() / 2.0f, 1.0f, "Game Over",
       glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
@@ -165,17 +177,35 @@ void Scene::pushNewFloor() {
   this->world.entities.push_back(newFloor);
   this->floors.push_back(newFloor);
   std::cout << "world entities: " << this->world.entities.size() << std::endl;
+  if (this->_difficulty < 4) this->_difficulty++;
 }
 
 void Scene::populateFloor(GameObject* floor_ptr) {
+  std::vector<GameObject*> obstacles;
   std::random_device rd;
   std::mt19937 mt(rd());
   for (int i = 0; i < this->_difficulty; i++) {
-    std::uniform_int_distribution<int> dist(0, 3);
+    std::uniform_int_distribution<int> dist(0, 2);
     int rand_nb = dist(mt);
     if (rand_nb == 0) {
-      addObstacle(floor_ptr->transform.position);
+      GameObject* obs = getObstacle(floor_ptr->transform.position);
+      if (obs != nullptr) {
+        for (GameObject* obstacle : obstacles) {
+          if (glm::distance(obs->transform.position,
+                            obstacle->transform.position) < 1.3f) {
+            delete obs;
+            obs = nullptr;
+            break;
+          }
+        }
+        if (obs != nullptr) {
+          obstacles.push_back(obs);
+        }
+      }
     }
+  }
+  for (GameObject* obstacle : obstacles) {
+    world.entities.push_back(obstacle);
   }
 }
 
@@ -203,12 +233,12 @@ void Scene::pushObstacleModel(std::string model_filename,
   this->obstacle_pool.push_back(gameObject);
 }
 
-void Scene::addObstacle(glm::vec3 floor_pos) {
+GameObject* Scene::getObstacle(glm::vec3 floor_pos) {
   std::random_device rd;
   std::mt19937 mt(rd());
-  std::uniform_int_distribution<int> dist_pos(0, 5);
+  std::uniform_int_distribution<int> dist_pos(0, 10);
   glm::vec3 obstacle_pos =
-      glm::vec3(0.0f, 0.0f, static_cast<float>(dist_pos(mt) * 4.0f));
+      glm::vec3(0.0f, 0.0f, static_cast<float>(dist_pos(mt) * 2.0f));
   if (obstacle_pool.size() > 0) {
     std::uniform_int_distribution<int> dist_rail(0, 2);
     int rand_rail = dist_rail(mt);
@@ -226,8 +256,9 @@ void Scene::addObstacle(glm::vec3 floor_pos) {
     std::uniform_int_distribution<float> dist_rot(0, 360);
     newObstacle->transform.rotation.y = glm::radians(dist_rot(mt));
     newObstacle->is_collider = true;
-    world.entities.push_back(newObstacle);
+    return (newObstacle);
   }
+  return (nullptr);
 }
 
 void Scene::createPlayer() {

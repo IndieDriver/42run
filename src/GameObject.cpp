@@ -116,8 +116,8 @@ PhysicsComponent& PhysicsComponent::operator=(PhysicsComponent const& rhs) {
 void PhysicsComponent::update(GameObject& gameObject, World& world) {
   has_collide = false;  // Reset every frame
   glm::vec3 backupPosition = gameObject.transform.position;
-  this->speed += 0.2f * world.deltaTime;
-  gameObject.transform.position.z += log(this->speed) * 5.0f * world.deltaTime;
+  this->speed += 0.5f * world.deltaTime;
+  gameObject.transform.position.z += log(this->speed) * 7.0f * world.deltaTime;
   this->velocity.y -= 0.81f * 4.0f * world.deltaTime;
   gameObject.transform.position.y += velocity.y * world.deltaTime;
 

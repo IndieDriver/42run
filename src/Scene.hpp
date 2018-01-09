@@ -1,4 +1,3 @@
-#pragma once
 #include <deque>
 #include <limits>
 #include "Camera.hpp"
@@ -20,9 +19,6 @@ class Scene {
   World world;
   VAO* vao_cube;
   std::deque<GameObject*> floors;
-  std::vector<Texture*> floor_textures_pool;
-  std::vector<Texture*> wall_textures_pool;
-  std::vector<Texture*> roof_textures_pool;
 
   GLuint shader_id;
   std::vector<GameObject*> floor_pool;
@@ -32,6 +28,7 @@ class Scene {
   Scene(void);
   void drawUI();
   void drawPauseUI();
+  void drawGameOverUI();
 
   void cleanup();
   void pushNewFloor();
@@ -44,12 +41,13 @@ class Scene {
   Texture* addTexture(std::string filename);
   VAO* addVAO(std::string filename);
 
-  void addObstacle(glm::vec3 floorPos);
+  GameObject* getObstacle(glm::vec3 floorPos);
   Camera* _camera;
   Renderer* _renderer;
   GameObject* _player;
   float _meter_counter;
   bool _paused;
+  bool _ended;
   int _difficulty;
 
   std::vector<VAO*> _scene_vaos;
