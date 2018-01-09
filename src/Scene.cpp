@@ -20,9 +20,11 @@ Scene::Scene(Shader shader, Camera* camera, Renderer* renderer)
   this->wall_textures_pool.push_back(addTexture("textures/white_wall.png"));
   this->wall_textures_pool.push_back(addTexture("textures/wood_tex.png"));
 
-  pushObstacleModel("models/table.obj", "models/table.png",
-                    glm::vec3(0.4f, 0.4f, 0.4f));
+  /* pushObstacleModel("models/table.obj", "models/table.png", */
+  /*                   glm::vec3(0.4f, 0.4f, 0.4f)); */
   pushObstacleModel("models/chair.obj", "textures/chair.png",
+                    glm::vec3(0.6f, 0.6f, 0.6f));
+  pushObstacleModel("models/table3.obj", "textures/table2.png",
                     glm::vec3(0.6f, 0.6f, 0.6f));
 
   createPlayer();
