@@ -225,7 +225,6 @@ void Scene::addObstacle(glm::vec3 floor_pos) {
     newObstacle->transform.position = floor_pos + obstacle_pos;
     std::uniform_int_distribution<float> dist_rot(0, 360);
     newObstacle->transform.rotation.y = glm::radians(dist_rot(mt));
-    newObstacle->updateAABB();
     newObstacle->is_collider = true;
     world.entities.push_back(newObstacle);
   }
@@ -239,14 +238,7 @@ void Scene::createPlayer() {
   GameObject* player =
       new GameObject(shader_id, marvin_vao, texture, new InputComponent(),
                      new PhysicsComponent(), nullptr);
-  // player->aabb_min = glm::vec3(-0.2f, 0.1f, -0.2f);
-  // player->aabb_max = glm::vec3(0.2f, 0.5f, 0.2f);
-  print_vec3(player->aabb_min);
-  print_vec3(player->aabb_max);
   player->transform.scale = glm::vec3(1.0f, 1.0f, 1.0f);
-  player->updateAABB();
-  print_vec3(player->aabb_min);
-  print_vec3(player->aabb_max);
   print_vec3(player->transform.position);
   player->is_collider = true;
   this->_player = player;

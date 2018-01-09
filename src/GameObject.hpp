@@ -76,10 +76,7 @@ class GameObject {
   Transform transform;
   GameObject* parent;
   glm::vec3 positionRelative = {0.0f, 0.0f, 0.0f};
-  void updateAABB();
 
-  glm::vec3 aabb_min;  // model space
-  glm::vec3 aabb_max;  // model space
   bool is_collider;
   InputComponent* inputComponent;
   PhysicsComponent* physicsComponent;

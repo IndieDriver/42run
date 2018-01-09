@@ -8,26 +8,9 @@ void World::update(InputHandler& inputHandler, float deltaT) {
 }
 
 bool World::collide(GameObject& gameObject) {
-  glm::vec4 aabb1_min_wspace =
-      gameObject.getWorldTransform() * glm::vec4(gameObject.aabb_min, 1.0f);
-  glm::vec4 aabb1_max_wspace =
-      gameObject.getWorldTransform() * glm::vec4(gameObject.aabb_max, 1.0f);
-
   for (auto entity : entities) {
     if (entity->is_collider && entity != &gameObject) {
-      glm::mat4 entity_model_matrix = entity->getWorldTransform();
-      glm::vec4 aabb2_min_wspace =
-          entity_model_matrix * glm::vec4(entity->aabb_min, 1.0f);
-      glm::vec4 aabb2_max_wspace =
-          entity_model_matrix * glm::vec4(entity->aabb_max, 1.0f);
-
-      bool isColliding = (aabb1_max_wspace.x >= aabb2_min_wspace.x &&
-                          aabb1_min_wspace.x <= aabb2_max_wspace.x) &&
-                         (aabb1_max_wspace.y >= aabb2_min_wspace.y &&
-                          aabb1_min_wspace.y <= aabb2_max_wspace.y) &&
-                         (aabb1_max_wspace.z >= aabb2_min_wspace.z &&
-                          aabb1_min_wspace.z <= aabb2_max_wspace.z);
-      if (isColliding) {
+      if (glm::distance(gameObject.transform.position, entity->transform.position) < 1.3f) {
         return (true);
       }
     }
@@ -52,14 +35,6 @@ GameObject::GameObject(GLuint shader, VAO* vao, Texture* texture,
   this->_renderAttrib.vao = vao;
   this->_renderAttrib.transforms.push_back(glm::mat4(1.0f));
   this->_renderAttrib.texture = texture;
-  if (vao != nullptr) {
-    this->aabb_min = vao->aabb_min;
-    this->aabb_max = vao->aabb_max;
-    updateAABB();
-  } else {
-    this->aabb_min = glm::vec3(0.0f, 0.0f, 0.0f);
-    this->aabb_max = glm::vec3(0.0f, 0.0f, 0.0f);
-  }
 }
 
 GameObject::GameObject(GameObject const& src) { *this = src; }
@@ -90,8 +65,6 @@ GameObject& GameObject::operator=(GameObject const& rhs) {
     this->transform.scale = rhs.transform.scale;
     this->parent = rhs.parent;
     this->positionRelative = rhs.positionRelative;
-    this->aabb_min = rhs.aabb_min;
-    this->aabb_max = rhs.aabb_max;
     this->is_collider = rhs.is_collider;
   }
   return (*this);
@@ -123,21 +96,6 @@ const RenderAttrib GameObject::getRenderAttrib() const {
 
 void GameObject::setTexture(Texture* texture) {
   this->_renderAttrib.texture = texture;
-}
-
-void GameObject::updateAABB() {
-  glm::mat4 model_matrix = glm::scale(this->transform.scale);
-  if (this->_renderAttrib.vao != nullptr) {
-    for (const auto& vertex : this->_renderAttrib.vao->vertices) {
-      glm::vec3 position = model_matrix * glm::vec4(vertex.position, 1.0f);
-      if (position.x < aabb_min.x) this->aabb_min.x = position.x;
-      if (position.x > aabb_max.x) this->aabb_max.x = position.x;
-      if (position.y < aabb_min.y) this->aabb_min.y = position.y;
-      if (position.y > aabb_max.y) this->aabb_max.y = position.y;
-      if (position.z < aabb_min.z) this->aabb_min.z = position.z;
-      if (position.z > aabb_max.z) this->aabb_max.z = position.z;
-    }
-  }
 }
 
 PhysicsComponent::PhysicsComponent(void) : speed(5.0f){};
@@ -178,7 +136,7 @@ void PhysicsComponent::update(GameObject& gameObject, World& world) {
   gameObject.transform.position +=
       (target - gameObject.transform.position) * world.deltaTime * 5.0f;
   if (world.collide(gameObject)) {
-    /* this->has_collide = true; */
+    this->has_collide = true;
     /* std::cout << "collide" << std::endl; */
     // end game ???
   }
