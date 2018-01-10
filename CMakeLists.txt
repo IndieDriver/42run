@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(42run)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11 -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 find_package(OpenGL REQUIRED)
 
 #Handle GLFW
@@ -20,7 +20,6 @@ include_directories(third-party/glm)
 include_directories(third-party/stb)
 include_directories(${OPENGL_INCLUDE_DIR})
 include_directories(third-party/tinyobjloader)
-
 
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
