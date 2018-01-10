@@ -36,8 +36,6 @@ void Renderer::draw() {
       shader_id = attrib.shader;
     }
     if (light_set == false) {
-      /* int i = 0; */
-      /* for (auto light : this->lights) { */
       for (int i = 0; i < this->lights.size(); i++) {
         if (i == MAX_LIGHT) break;
         glUniform4fv(
@@ -54,7 +52,6 @@ void Renderer::draw() {
                         attrib.shader,
                         ("lights[" + std::to_string(i) + "].radius").c_str()),
                     lights[i].radius);
-        /* i++; */
       }
       glUniform1i(glGetUniformLocation(attrib.shader, "light_nb"),
                   this->lights.size());

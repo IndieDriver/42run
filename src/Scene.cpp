@@ -3,7 +3,8 @@
 Scene::Scene(void) {}
 
 Scene::Scene(Shader shader, Camera* camera, Renderer* renderer)
-    : shader_id(shader.id),
+    : back_floor(nullptr),
+      shader_id(shader.id),
       _camera(camera),
       _renderer(renderer),
       _player(nullptr),
@@ -43,6 +44,9 @@ Scene::~Scene(void) {
   for (GameObject* obs : obstacle_pool) {
     delete obs;
   }
+  for (GameObject* obs : floor_pool) {
+    delete obs;
+  }
   for (VAO* vao : _scene_vaos) {
     delete vao;
   }
@@ -53,7 +57,7 @@ Scene::~Scene(void) {
 
 Scene& Scene::operator=(Scene const& rhs) {
   if (this != &rhs) {
-    this->floors = rhs.floors;
+    this->back_floor = rhs.back_floor;
     this->world = rhs.world;
     this->shader_id = rhs.shader_id;
     this->floor_pool = rhs.floor_pool;
@@ -82,9 +86,10 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
     this->_difficulty = roundf(0.2f * floor(_meter_counter / 20) + 4.0f);
     this->_difficulty = glm::clamp(this->_difficulty, 0, 10);
   }
-  if (this->floors.size() > 0 && this->floors.back()->transform.position.z -
-                                         this->_player->transform.position.z <
-                                     125.0f) {
+  if (this->back_floor != nullptr &&
+      this->back_floor->transform.position.z -
+              this->_player->transform.position.z <
+          125.0f) {
     pushNewFloor();
   }
   cleanup();
@@ -103,12 +108,6 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
     _renderer->proj = this->_camera->proj;
     this->_meter_counter += this->_player->positionRelative.z;
   }
-  /* std::cout << this->_renderer->lights.size() << std::endl; */
-
-  /* this->_renderer->lights[0].position = */
-  /*     glm::vec4(this->_player->transform.position, 0.0f); */
-  /* this->_renderer->lights[0].color = glm::vec3(1.0f, 1.0f, 1.0f); */
-  /* this->_renderer->lights[0].radius = 10.0f; */
 }
 
 void Scene::draw() {
@@ -166,7 +165,6 @@ void Scene::cleanup() {
                      this->_renderer->lights.end(),
                      [playerPos](Light light) {
                        if (light.position.z - playerPos.z < -10.0f) {
-                         std::cout << "remove light" << std::endl;
                          return (true);
                        }
                        return (false);
@@ -177,10 +175,10 @@ void Scene::cleanup() {
 void Scene::pushNewFloor() {
   Light light;
   glm::vec3 floorPos;
-  if (this->floors.size() == 0) {
+  if (this->back_floor == nullptr) {
     floorPos = glm::vec3(0.0f, -1.0f, 0.0f);
   } else {
-    floorPos = this->floors.back()->transform.position;
+    floorPos = this->back_floor->transform.position;
     floorPos.z += 20.0f;
   }
   std::random_device rd;
@@ -200,8 +198,7 @@ void Scene::pushNewFloor() {
   this->_renderer->lights.push_back(light);
 
   this->world.entities.push_back(newFloor);
-  this->floors.push_back(newFloor);
-  std::cout << "world entities: " << this->world.entities.size() << std::endl;
+  this->back_floor = newFloor;
   if (this->_difficulty < 4) this->_difficulty++;
 }
 
@@ -272,8 +269,6 @@ GameObject* Scene::getObstacle(glm::vec3 floor_pos) {
     } else if (rand_rail == 2) {  // Rail right
       obstacle_pos.x -= 1.25f;
     }
-    /* std::cout << "new obstacles at: "; */
-    print_vec3(obstacle_pos);
     std::uniform_int_distribution<int> dist_obs(0, obstacle_pool.size() - 1);
     GameObject* obstacle = obstacle_pool[dist_obs(mt)];
     GameObject* newObstacle = new GameObject(*obstacle);
@@ -288,17 +283,12 @@ GameObject* Scene::getObstacle(glm::vec3 floor_pos) {
 
 void Scene::createPlayer() {
   VAO* marvin_vao = addVAO("models/marvin.obj");
-  /* std::cout << "vao size: " << marvin_vao->vertices.size() << std::endl; */
-  /* std::cout << "vao indices: " << marvin_vao->indices_size << std::endl; */
   Texture* texture = addTexture("textures/marvin_tex.png");
   GameObject* player =
       new GameObject(shader_id, marvin_vao, texture, new InputComponent(),
                      new PhysicsComponent(), nullptr);
   player->transform.scale = glm::vec3(1.0f, 1.0f, 1.0f);
-  print_vec3(player->transform.position);
   player->is_collider = true;
   this->_player = player;
-  std::cout << "scale: ";
-  print_vec3(this->_player->transform.scale);
   world.entities.push_back(player);
 }

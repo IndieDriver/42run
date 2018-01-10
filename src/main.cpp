@@ -17,7 +17,7 @@ int main() {
   Renderer renderer(env.width, env.height);
   Scene *scene = new Scene(shader, &camera, &renderer);
   while (!glfwWindowShouldClose(env.window)) {
-    env.updateFpsCounter();
+    /* env.updateFpsCounter(); */
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glfwPollEvents();

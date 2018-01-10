@@ -17,8 +17,7 @@ class Scene {
   void draw();
 
   World world;
-  VAO* vao_cube;
-  std::deque<GameObject*> floors;
+  GameObject* back_floor;
 
   GLuint shader_id;
   std::vector<GameObject*> floor_pool;
