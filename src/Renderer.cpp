@@ -14,6 +14,7 @@ Renderer &Renderer::operator=(Renderer const &rhs) {
   if (this != &rhs) {
     this->view = rhs.view;
     this->proj = rhs.proj;
+    this->lights = rhs.lights;
     this->_renderAttribs = rhs._renderAttribs;
   }
   return (*this);
@@ -28,10 +29,36 @@ void Renderer::draw() {
   // printRenderAttribs();
   int shader_id = -1;
   int texture_id = -1;
+  bool light_set = false;
   for (const auto &attrib : this->_renderAttribs) {
     if (attrib.shader > 0 && attrib.shader != shader_id) {
       glUseProgram(attrib.shader);
       shader_id = attrib.shader;
+    }
+    if (light_set == false) {
+      /* int i = 0; */
+      /* for (auto light : this->lights) { */
+      for (int i = 0; i < this->lights.size(); i++) {
+        if (i == MAX_LIGHT) break;
+        glUniform4fv(
+            glGetUniformLocation(
+                attrib.shader,
+                ("lights[" + std::to_string(i) + "].position").c_str()),
+            1, static_cast<GLfloat *>(glm::value_ptr(lights[i].position)));
+        glUniform3fv(glGetUniformLocation(
+                         attrib.shader,
+                         ("lights[" + std::to_string(i) + "].color").c_str()),
+                     1,
+                     static_cast<GLfloat *>(glm::value_ptr(lights[i].color)));
+        glUniform1f(glGetUniformLocation(
+                        attrib.shader,
+                        ("lights[" + std::to_string(i) + "].radius").c_str()),
+                    lights[i].radius);
+        /* i++; */
+      }
+      glUniform1i(glGetUniformLocation(attrib.shader, "light_nb"),
+                  this->lights.size());
+      light_set = true;
     }
     if (shader_id > 0 && attrib.vao != nullptr) {
       if (attrib.texture != nullptr) {
@@ -45,10 +72,12 @@ void Renderer::draw() {
         texture_id = -1;
       }
       glm::mat4 mvp = this->proj * this->view * attrib.transforms[0];
+      glm::mat4 model = attrib.transforms[0];
       glUniformMatrix4fv(glGetUniformLocation(attrib.shader, "MVP"), 1,
                          GL_FALSE, static_cast<GLfloat *>(glm::value_ptr(mvp)));
+      glUniformMatrix4fv(glGetUniformLocation(attrib.shader, "M"), 1, GL_FALSE,
+                         static_cast<GLfloat *>(glm::value_ptr(model)));
       if (attrib.vao->ebo != 0) {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, attrib.vao->ebo);
         glBindVertexArray(attrib.vao->vao);
         glDrawElements(GL_TRIANGLES, attrib.vao->indices_size, GL_UNSIGNED_INT,
                        static_cast<void *>(0));
@@ -82,6 +111,13 @@ void Renderer::printRenderAttribs() {
     std::cout << std::endl;
   }
   std::cout << "------------" << std::endl;
+}
+
+void Renderer::reset() {
+  this->view = glm::mat4();
+  this->proj = glm::mat4();
+  this->lights.clear();
+  this->_renderAttribs.clear();
 }
 
 int Renderer::getScreenWidth() { return (this->_width); }
@@ -210,11 +246,12 @@ VAO::VAO(std::vector<Vertex> vertices) : vertices(vertices) {
                         (GLvoid *)offsetof(Vertex, position));
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                         (GLvoid *)offsetof(Vertex, uv));
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                        (GLvoid *)offsetof(Vertex, normal));
 
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
-
-  calc_aabb(vertices, glm::mat4(1.0f));
+  glEnableVertexAttribArray(2);
 }
 
 VAO::VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices)
@@ -237,6 +274,8 @@ VAO::VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices)
                         (GLvoid *)offsetof(Vertex, position));
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                         (GLvoid *)offsetof(Vertex, uv));
+  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                        (GLvoid *)offsetof(Vertex, normal));
 
   glGenBuffers(1, &this->ebo);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
@@ -245,26 +284,13 @@ VAO::VAO(std::vector<Vertex> vertices, std::vector<GLuint> indices)
 
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(1);
-
-  calc_aabb(vertices, glm::mat4(1.0f));
+  glEnableVertexAttribArray(2);
 }
 
 VAO::~VAO() {
   if (this->_vbo != 0) glDeleteBuffers(1, &this->_vbo);
   if (this->ebo != 0) glDeleteBuffers(1, &this->ebo);
   if (this->vao != 0) glDeleteVertexArrays(1, &this->vao);
-}
-
-void VAO::calc_aabb(std::vector<Vertex> vertices, glm::mat4 model_matrix) {
-  for (const auto &vertex : vertices) {
-    glm::vec3 position = model_matrix * glm::vec4(vertex.position, 1.0f);
-    if (position.x < aabb_min.x) aabb_min.x = position.x;
-    if (position.x > aabb_max.x) aabb_max.x = position.x;
-    if (position.y < aabb_min.y) aabb_min.y = position.y;
-    if (position.y > aabb_max.y) aabb_max.y = position.y;
-    if (position.z < aabb_min.z) aabb_min.z = position.z;
-    if (position.z > aabb_max.z) aabb_max.z = position.z;
-  }
 }
 
 Texture::Texture(std::string filename) : id(-1) {

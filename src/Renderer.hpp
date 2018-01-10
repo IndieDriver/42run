@@ -26,7 +26,6 @@ struct VAO {
   std::vector<Vertex> vertices;
 
  private:
-  void calc_aabb(std::vector<Vertex> vertices, glm::mat4 model_matrix);
   GLuint _vbo;
 };
 
@@ -84,6 +83,7 @@ class Renderer {
                   glm::vec3 color);
   void draw();
   void flush();
+  void reset();
   void printRenderAttribs();
   int getScreenWidth();
   int getScreenHeight();
@@ -91,6 +91,7 @@ class Renderer {
   TextRenderer textRenderer;
   glm::mat4 view;
   glm::mat4 proj;
+  std::vector<Light> lights;
 
  private:
   int _width;

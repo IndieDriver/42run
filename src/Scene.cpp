@@ -103,6 +103,12 @@ void Scene::update(InputHandler& inputHandler, float deltaTime) {
     _renderer->proj = this->_camera->proj;
     this->_meter_counter += this->_player->positionRelative.z;
   }
+  /* std::cout << this->_renderer->lights.size() << std::endl; */
+
+  /* this->_renderer->lights[0].position = */
+  /*     glm::vec4(this->_player->transform.position, 0.0f); */
+  /* this->_renderer->lights[0].color = glm::vec3(1.0f, 1.0f, 1.0f); */
+  /* this->_renderer->lights[0].radius = 10.0f; */
 }
 
 void Scene::draw() {
@@ -155,9 +161,21 @@ void Scene::cleanup() {
                        return (false);
                      }),
       world.entities.end());
+  this->_renderer->lights.erase(
+      std::remove_if(this->_renderer->lights.begin(),
+                     this->_renderer->lights.end(),
+                     [playerPos](Light light) {
+                       if (light.position.z - playerPos.z < -10.0f) {
+                         std::cout << "remove light" << std::endl;
+                         return (true);
+                       }
+                       return (false);
+                     }),
+      this->_renderer->lights.end());
 }
 
 void Scene::pushNewFloor() {
+  Light light;
   glm::vec3 floorPos;
   if (this->floors.size() == 0) {
     floorPos = glm::vec3(0.0f, -1.0f, 0.0f);
@@ -173,6 +191,13 @@ void Scene::pushNewFloor() {
 
   newFloor->transform.position = floorPos;
   populateFloor(newFloor);
+
+  light.position = glm::vec4(floorPos, 0.0f);
+  light.position.z += 10.0f;
+  light.position.y += 5.0f;
+  light.color = glm::vec3(1.0f, 1.0f, 1.0f);
+  light.radius = 20.0f;
+  this->_renderer->lights.push_back(light);
 
   this->world.entities.push_back(newFloor);
   this->floors.push_back(newFloor);
@@ -192,7 +217,7 @@ void Scene::populateFloor(GameObject* floor_ptr) {
       if (obs != nullptr) {
         for (GameObject* obstacle : obstacles) {
           if (glm::distance(obs->transform.position,
-                            obstacle->transform.position) < 1.3f) {
+                            obstacle->transform.position) < 1.5f) {
             delete obs;
             obs = nullptr;
             break;
@@ -247,7 +272,7 @@ GameObject* Scene::getObstacle(glm::vec3 floor_pos) {
     } else if (rand_rail == 2) {  // Rail right
       obstacle_pos.x -= 1.25f;
     }
-    std::cout << "new obstacles at: ";
+    /* std::cout << "new obstacles at: "; */
     print_vec3(obstacle_pos);
     std::uniform_int_distribution<int> dist_obs(0, obstacle_pool.size() - 1);
     GameObject* obstacle = obstacle_pool[dist_obs(mt)];
@@ -263,8 +288,8 @@ GameObject* Scene::getObstacle(glm::vec3 floor_pos) {
 
 void Scene::createPlayer() {
   VAO* marvin_vao = addVAO("models/marvin.obj");
-  std::cout << "vao size: " << marvin_vao->vertices.size() << std::endl;
-  std::cout << "vao indices: " << marvin_vao->indices_size << std::endl;
+  /* std::cout << "vao size: " << marvin_vao->vertices.size() << std::endl; */
+  /* std::cout << "vao indices: " << marvin_vao->indices_size << std::endl; */
   Texture* texture = addTexture("textures/marvin_tex.png");
   GameObject* player =
       new GameObject(shader_id, marvin_vao, texture, new InputComponent(),

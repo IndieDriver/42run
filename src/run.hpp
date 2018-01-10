@@ -12,10 +12,18 @@
 #include <random>
 #include <string>
 #include <vector>
+#define MAX_LIGHT 3
+
+struct Light {
+  glm::vec4 position;
+  glm::vec3 color;
+  float radius;
+};
 
 struct Vertex {
   glm::vec3 position;
   glm::vec2 uv;
+  glm::vec3 normal;
 };
 
 static void GL_DUMP_ERROR(std::string message) {

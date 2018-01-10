@@ -44,6 +44,7 @@ Model::Model(const std::string filename) {
           f < shape.mesh.material_ids.size() ? shape.mesh.material_ids[f] : 0;
       if (material_id == -1) material_id = 0;
       face.material_id = material_id;
+      bool normalNeeded = false;
       for (size_t j = 0; j < 3; j++) {
         int vertex_index = shape.mesh.indices[(f * 3) + j].vertex_index;
         int normal_index = shape.mesh.indices[(f * 3) + j].normal_index;
@@ -58,6 +59,20 @@ Model::Model(const std::string filename) {
           face.vertices[j].uv = {attrib.texcoords[2 * texcoord_index + 0],
                                  attrib.texcoords[2 * texcoord_index + 1]};
         }
+        if (normal_index != -1) {
+          face.vertices[j].normal = {attrib.normals[3 * normal_index + 0],
+                                     attrib.normals[3 * normal_index + 1],
+                                     attrib.normals[3 * normal_index + 2]};
+          normalNeeded = true;
+        }
+      }
+      if (normalNeeded) {
+        glm::vec3 normal = glm::normalize(
+            glm::cross(face.vertices[2].position - face.vertices[0].position,
+                       face.vertices[1].position - face.vertices[0].position));
+        face.vertices[0].normal = normal;
+        face.vertices[1].normal = normal;
+        face.vertices[2].normal = normal;
       }
 
       faceList.push_back(face);

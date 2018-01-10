@@ -23,6 +23,7 @@ int main() {
     glfwPollEvents();
     if (env.inputHandler.keys[GLFW_KEY_R]) {
       delete scene;
+      renderer.reset();
       scene = new Scene(shader, &camera, &renderer);
       env.inputHandler.keys[GLFW_KEY_R] = false;
     }
